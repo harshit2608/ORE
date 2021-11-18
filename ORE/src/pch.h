@@ -4,3 +4,4 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
+#include <memory>

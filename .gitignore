@@ -36,3 +36,5 @@
 build/
 Build/
 out/
+CMakeFiles/
+task.txt

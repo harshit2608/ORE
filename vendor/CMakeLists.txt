@@ -27,3 +27,11 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL        OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(${GLFW_LIB_NAME})
+
+# SPDLOG=====================================================================================
+set(SPDLOG_LIB_NAME "spdlog")
+message("=== BUILDING ${SPDLOG_LIB_NAME} ===")
+set(SPDLOG_COMPILED_LIB TRUE)
+set(SPDLOG_MASTER_PROJECT OFF CACHE BOOL "" FORCE)
+
+add_subdirectory(${SPDLOG_LIB_NAME})
