@@ -28,6 +28,18 @@ set(GLFW_INSTALL        OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(${GLFW_LIB_NAME})
 
+# GLM=====================================================================================
+set(GLM_LIB_NAME "glm")
+message("=== BUILDING ${GLM_LIB_NAME} ===")
+set(GLM_INC_PATH ${GLM_LIB_NAME})
+set(GLM_TEST_ENABLE OFF CACHE BOOL "" FORCE)
+add_subdirectory(${GLM_LIB_NAME})
+message(${GLM_LIB_NAME})
+# target_include_directories(${GLM_LIB_NAME}
+#    PUBLIC
+#        "${GLM_INC_PATH}"
+# )
+
 # SPDLOG=====================================================================================
 set(SPDLOG_LIB_NAME "spdlog")
 message("=== BUILDING ${SPDLOG_LIB_NAME} ===")

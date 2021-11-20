@@ -5,9 +5,10 @@
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
+#include <stb_image.h>
 
-uint32_t SCREEN_WIDTH = 800;
-uint32_t SCREEN_HEIGHT = 600;
+uint32_t SCREEN_WIDTH = 700;
+uint32_t SCREEN_HEIGHT = 700;
 std::string TITLE = "ORE";
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -24,7 +25,9 @@ int main()
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
+
     GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE.c_str(), nullptr, nullptr);
+
     if (window == nullptr)
     {
         ORE_CORE_ERROR("Failed to create GLFW window");
@@ -34,29 +37,46 @@ int main()
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        ORE_CORE_ERROR("Failed to initialize GLAD");
-        return -1;
-    }
+    ORE::Context context(window);
+    context.Init();
 
-    ORE::Shader shader("assets/shaders/basic.glsl");
+    ORE::Shader shader("assets/shaders/texture.glsl");
+    ORE::Texture texture("assets/textures/container.jpg");
+
     float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f};
+        // positions          // colors           // texture coords
+        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // top right
+        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
+        -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f   // top left
+    };
 
-    uint32_t VBO, VAO;
+    uint32_t indices[] = {
+        0, 1, 3,
+        1, 2, 3};
+
+    uint32_t VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
     glBindVertexArray(VAO);
 
-    glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), (void *)0);
-    glEnableVertexAttribArray(0);
 
-    glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(0);
+    // color attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    // texture coord attribute
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -72,9 +92,11 @@ int main()
         processInput(window);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+        texture.Bind();
         shader.Bind();
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        // glBindVertexArray(0);
         // ImGui::ShowDemoWindow();
 
         // ImGui_ImplOpenGL3_NewFrame();
@@ -115,7 +137,7 @@ int main()
         ImGui::NewFrame();
         ImGui::Begin("Main Controls");
         ImGui::Text("Point light");
-        ImGui::ShowDemoWindow(&show_demo_window);
+        // ImGui::ShowDemoWindow(&show_demo_window);
         ImGui::End();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

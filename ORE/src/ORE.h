@@ -13,3 +13,5 @@
 // RENDERER===========================
 
 #include "renderer/Shader.h"
+#include "renderer/Texture.h"
+#include "renderer/Context.h"

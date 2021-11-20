@@ -21,6 +21,7 @@ target_link_libraries(${PROJECT_NAME}
         spdlog
         ImGui
         stb_image
+        glm
 )
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE "src/pch.h" "src/pch.cpp")
