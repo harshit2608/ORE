@@ -36,3 +36,11 @@ endif()
 if(NOT EXISTS "${PROJECT_SOURCE_DIR}/vendor/GLFW/CMakeLists.txt")
     message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
+
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/vendor/ImGui/imgui.cpp")
+    message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
+endif()
+
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/vendor/spdlog/CMakeLists.txt")
+    message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
+endif()

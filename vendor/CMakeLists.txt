@@ -35,3 +35,62 @@ set(SPDLOG_COMPILED_LIB TRUE)
 set(SPDLOG_MASTER_PROJECT OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(${SPDLOG_LIB_NAME})
+
+# STB_IMAGE=====================================================================================
+set(STB_LIB_NAME "stb_image")
+message("=== BUILDING ${STB_LIB_NAME} ===")
+set(STB_SRC_PATH "${STB_LIB_NAME}/src")
+set(STB_INC_PATH "${STB_LIB_NAME}/include")
+add_library( ${STB_LIB_NAME}
+    STATIC
+        "${STB_SRC_PATH}/stb_image.cpp"
+)
+
+target_include_directories(${STB_LIB_NAME}
+    PUBLIC
+        "${STB_INC_PATH}"
+)
+
+# IMGUI=====================================================================================
+set(IMGUI_LIB_NAME "ImGui")
+
+set(IMGUI_SOURCES
+    "${IMGUI_LIB_NAME}/imgui.cpp"
+    "${IMGUI_LIB_NAME}/imgui_demo.cpp"
+    "${IMGUI_LIB_NAME}/imgui_draw.cpp"
+    "${IMGUI_LIB_NAME}/imgui_tables.cpp"
+    "${IMGUI_LIB_NAME}/imgui_widgets.cpp"
+    "${IMGUI_LIB_NAME}/backends/imgui_impl_glfw.cpp"
+    "${IMGUI_LIB_NAME}/backends/imgui_impl_opengl3.cpp"
+)
+
+set(IMGUI_HEADERS
+    "${IMGUI_LIB_NAME}/imconfig.h"
+    "${IMGUI_LIB_NAME}/imgui.h"
+    "${IMGUI_LIB_NAME}/imgui_internal.h"
+    "${IMGUI_LIB_NAME}/imstb_rectpack.h"
+    "${IMGUI_LIB_NAME}/imstb_textedit.h"
+    "${IMGUI_LIB_NAME}/imstb_truetype.h"
+    "${IMGUI_LIB_NAME}/backends/imgui_impl_glfw.h"
+    "${IMGUI_LIB_NAME}/backends/imgui_impl_opengl3.h"
+)
+
+set(IMGUI_INC_PATH "${IMGUI_LIB_NAME}/")
+
+add_library(${IMGUI_LIB_NAME}
+    STATIC
+        ${IMGUI_SOURCES}
+        ${IMGUI_HEADERS}
+)
+
+target_compile_definitions(${IMGUI_LIB_NAME}
+    PRIVATE
+        IMGUI_IMPL_OPENGL_LOADER_GLAD=1
+)
+
+target_include_directories(${IMGUI_LIB_NAME}
+    PUBLIC
+        "${GLFW_INC_PATH}"
+        "${GLAD_INC_PATH}"
+        "${IMGUI_INC_PATH}"
+)

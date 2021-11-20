@@ -2,6 +2,9 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 
 uint32_t SCREEN_WIDTH = 800;
 uint32_t SCREEN_HEIGHT = 600;
@@ -10,34 +13,6 @@ std::string TITLE = "ORE";
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 
-const char *vertexShaderSource1 = R"(
-#vertex 450 core\n
-layout (location = 0) in vec3 aPos;\n
-void main()\n
-{\n
-    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n
-})";
-
-const char *fragmentShaderSource1 = R"(
-#vertex 450 core\n
-out vec4 FragColor;\n
-void main()\n
-{\n
-    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n
-})";
-
-const char *vertexShaderSource = "#version 450 core\n"
-                                 "layout (location = 0) in vec3 aPos;\n"
-                                 "void main()\n"
-                                 "{\n"
-                                 "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-                                 "}\0";
-const char *fragmentShaderSource = "#version 450 core\n"
-                                   "out vec4 FragColor;\n"
-                                   "void main()\n"
-                                   "{\n"
-                                   "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-                                   "}\n\0";
 int main()
 {
     ORE::Log::Init();
@@ -83,6 +58,15 @@ int main()
 
     glBindVertexArray(0);
 
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 450");
+    bool show_demo_window = true, show_another_window = false;
+
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
@@ -91,12 +75,62 @@ int main()
         shader.Bind();
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        glfwSwapBuffers(window);
+        // ImGui::ShowDemoWindow();
+
+        // ImGui_ImplOpenGL3_NewFrame();
+        // ImGui_ImplGlfw_NewFrame();
+        // ImGui::NewFrame();
+        // if (show_demo_window)
+        //     ImGui::ShowDemoWindow(&show_demo_window);
+        // {
+        //     static float f = 0.0f;
+        //     static int counter = 0;
+
+        //     ImGui::Begin("Hello, world!");
+        //     ImGui::Text("This is some useful text.");
+        //     ImGui::Checkbox("Demo Window", &show_demo_window);
+        //     ImGui::Checkbox("Another Window", &show_another_window);
+        //     ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+        //     // ImGui::ColorEdit3("clear color", (float *)&clear_color);
+
+        //     if (ImGui::Button("Button"))
+        //         counter++;
+        //     ImGui::SameLine();
+        //     ImGui::Text("counter = %d", counter);
+        //     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        //     ImGui::End();
+        // }
+
+        // if (show_another_window)
+        // {
+        //     ImGui::Begin("Another Window", &show_another_window);
+        //     ImGui::Text("Hello from another window!");
+        //     if (ImGui::Button("Close Me"))
+        //         show_another_window = false;
+        //     ImGui::End();
+        // }
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        ImGui::Begin("Main Controls");
+        ImGui::Text("Point light");
+        ImGui::ShowDemoWindow(&show_demo_window);
+        ImGui::End();
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        // ImGui::Render();
         glfwPollEvents();
+        glfwSwapBuffers(window);
     }
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    // glDeleteProgram(shaderProgram);
+    shader.UnBind();
     glfwTerminate();
     return 0;
 }

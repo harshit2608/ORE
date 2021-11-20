@@ -19,6 +19,8 @@ target_link_libraries(${PROJECT_NAME}
         glfw
         Glad
         spdlog
+        ImGui
+        stb_image
 )
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE "src/pch.h" "src/pch.cpp")
