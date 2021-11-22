@@ -7,7 +7,7 @@
 #include <backends/imgui_impl_opengl3.h>
 #include <stb_image.h>
 
-uint32_t SCREEN_WIDTH = 700;
+const uint32_t SCREEN_WIDTH = 900;
 uint32_t SCREEN_HEIGHT = 700;
 std::string TITLE = "ORE";
 
@@ -45,38 +45,29 @@ int main()
 
     float vertices[] = {
         // positions          // colors           // texture coords
-        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // top right
-        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
-        -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f   // top left
+        0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // top right
+        0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, // bottom left
+        -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f   // top left
     };
 
     uint32_t indices[] = {
-        0, 1, 3,
-        1, 2, 3};
+        0, 1, 3, // first Triangle
+        1, 2, 3  // second Triangle
+    };
 
-    uint32_t VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    ORE::Ref<ORE::ManagerVertexArray> vertexArray = ORE::ManagerVertexArray::Create();
+    ORE::Ref<ORE::ManagerVertexBuffer> vertexBuffer = ORE::ManagerVertexBuffer::Create(vertices, sizeof(vertices));
+    ORE::BufferLayout layout = {
+        {ORE::ShaderDataType::Vec3, "a_Position"},
+        {ORE::ShaderDataType::Vec3, "a_Color"},
+        {ORE::ShaderDataType::Vec2, "a_TexCoords"}};
 
-    glBindVertexArray(VAO);
+    vertexBuffer->SetLayout(layout);
+    vertexArray->AddVertexBuffer(vertexBuffer);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(0);
-    // color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    // texture coord attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    ORE::Ref<ORE::ManagerIndexBuffer> indexBuffer = ORE::ManagerIndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
+    vertexArray->SetIndexBuffer(indexBuffer);
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -90,54 +81,20 @@ int main()
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.1f, 0.1f, 0.1f, 1);
         glClear(GL_COLOR_BUFFER_BIT);
         texture.Bind();
         shader.Bind();
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        // glBindVertexArray(0);
-        // ImGui::ShowDemoWindow();
-
-        // ImGui_ImplOpenGL3_NewFrame();
-        // ImGui_ImplGlfw_NewFrame();
-        // ImGui::NewFrame();
-        // if (show_demo_window)
-        //     ImGui::ShowDemoWindow(&show_demo_window);
-        // {
-        //     static float f = 0.0f;
-        //     static int counter = 0;
-
-        //     ImGui::Begin("Hello, world!");
-        //     ImGui::Text("This is some useful text.");
-        //     ImGui::Checkbox("Demo Window", &show_demo_window);
-        //     ImGui::Checkbox("Another Window", &show_another_window);
-        //     ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-        //     // ImGui::ColorEdit3("clear color", (float *)&clear_color);
-
-        //     if (ImGui::Button("Button"))
-        //         counter++;
-        //     ImGui::SameLine();
-        //     ImGui::Text("counter = %d", counter);
-        //     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-        //     ImGui::End();
-        // }
-
-        // if (show_another_window)
-        // {
-        //     ImGui::Begin("Another Window", &show_another_window);
-        //     ImGui::Text("Hello from another window!");
-        //     if (ImGui::Button("Close Me"))
-        //         show_another_window = false;
-        //     ImGui::End();
-        // }
+        uint32_t count = vertexArray->GetIndexBuffer()->GetCount();
+        vertexArray->Bind();
+        glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
         ImGui::Begin("Main Controls");
         ImGui::Text("Point light");
-        // ImGui::ShowDemoWindow(&show_demo_window);
+        ImGui::ShowDemoWindow(&show_demo_window);
         ImGui::End();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -150,8 +107,8 @@ int main()
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+    vertexArray->UnBind();
+    vertexBuffer->UnBind();
     shader.UnBind();
     glfwTerminate();
     return 0;
