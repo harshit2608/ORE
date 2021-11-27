@@ -2,6 +2,7 @@
 
 #include "../core/Core.h"
 #include "GraphicManager.h"
+#include <stb_image.h>
 
 #include <glad/glad.h>
 
@@ -26,4 +27,5 @@ namespace ORE
         std::string m_Path;
         GLenum m_InternalFormat, m_DataFormat;
     };
+
 } // namespace ORE

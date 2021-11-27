@@ -3,8 +3,8 @@
 
 namespace ORE
 {
-    Model::Model(const std::string &path, bool gamma)
-        : m_gammaCorrection(gamma)
+    Model::Model(const std::string &path, float scaleFactor, bool gamma)
+        : m_ScaleFactor(scaleFactor), m_gammaCorrection(gamma)
     {
         loadModel(path);
     }

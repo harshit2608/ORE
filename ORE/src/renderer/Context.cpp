@@ -15,10 +15,10 @@ namespace ORE
         ORE_CORE_ASSERT(windowHandle, "Window handle is null!")
     }
 
-    void OpenGLMessageCallback(unsigned source,
-                               unsigned type,
-                               unsigned id,
-                               unsigned severity,
+    void OpenGLMessageCallback(uint32_t source,
+                               uint32_t type,
+                               uint32_t id,
+                               uint32_t severity,
                                int length,
                                const char *message,
                                const void *userParam)
