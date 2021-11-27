@@ -106,3 +106,10 @@ target_include_directories(${IMGUI_LIB_NAME}
         "${GLAD_INC_PATH}"
         "${IMGUI_INC_PATH}"
 )
+
+# ASSIMP=====================================================================================
+set(ASSIMP_LIB_NAME "assimp")
+message("=== BUILDING ${ASSIMP_LIB_NAME} ===")
+set(ASSIMP_INC_PATH ${ASSIMP_LIB_NAME}/include)
+# set(ASSIMP_BUILD_ASSIMP_TOOLS OFF)
+add_subdirectory(${ASSIMP_LIB_NAME})

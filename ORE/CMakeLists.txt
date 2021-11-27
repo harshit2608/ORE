@@ -22,6 +22,7 @@ target_link_libraries(${PROJECT_NAME}
         ImGui
         stb_image
         glm
+        assimp
 )
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE "src/pch.h" "src/pch.cpp")

@@ -38,3 +38,4 @@ Build/
 out/
 CMakeFiles/
 task.txt
+*.rdc

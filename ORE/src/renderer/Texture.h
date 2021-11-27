@@ -1,23 +1,24 @@
 #pragma once
 
 #include "../core/Core.h"
+#include "GraphicManager.h"
 
 #include <glad/glad.h>
 
 namespace ORE
 {
-    class Texture
+    class Texture : public ManagerTexture2D
     {
     public:
         Texture(uint32_t width, uint32_t height);
         Texture(const std::string &path);
-        ~Texture();
+        virtual ~Texture();
 
-        void Bind(uint32_t slot = 0) const;
+        virtual void Bind(uint32_t slot = 0) const override;
 
-        uint32_t GetWidth() const { return m_Width; }
-        uint32_t GetHeight() const { return m_Height; }
-        uint32_t GetRendererID() const { return m_RendererID; }
+        virtual uint32_t GetWidth() const override { return m_Width; }
+        virtual uint32_t GetHeight() const override { return m_Height; }
+        virtual uint32_t GetRendererID() const override { return m_RendererID; }
 
     private:
         uint32_t m_RendererID;

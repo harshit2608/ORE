@@ -39,7 +39,7 @@ namespace ORE
     std::string Shader::ReadShaderFile(const std::string &filepath)
     {
         std::string result;
-        std::ifstream in(filepath, std::ios::in | std::ios::binary); // ifstream closes itself due to RAII
+        std::ifstream in(filepath, std::ios::in | std::ios::binary);
         if (in)
         {
             in.seekg(0, std::ios::end);
@@ -128,23 +128,17 @@ namespace ORE
         }
 
         m_RendererID = program;
-
-        // Link our program
         glLinkProgram(program);
 
-        // Note the different functions here: glGetProgram* instead of glGetShader*.
         int isLinked = 0;
         glGetProgramiv(program, GL_LINK_STATUS, (int *)&isLinked);
         if (isLinked == GL_FALSE)
         {
             int maxLength = 0;
             glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
-
-            // The maxLength includes the NULL character
             std::vector<char> infoLog(maxLength);
             glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
 
-            // We don't need the program anymore.
             glDeleteProgram(program);
 
             for (auto id : glShaderIDs)
@@ -175,6 +169,63 @@ namespace ORE
     void Shader::UnBind() const
     {
         glUseProgram(0);
+    }
+
+    void Shader::setBool(const std::string &name, bool value) const
+    {
+        glUniform1i(glGetUniformLocation(m_RendererID, name.c_str()), (int)value);
+    }
+
+    void Shader::setInt(const std::string &name, int value) const
+    {
+        glUniform1i(glGetUniformLocation(m_RendererID, name.c_str()), value);
+    }
+
+    void Shader::setFloat(const std::string &name, float value) const
+    {
+        glUniform1f(glGetUniformLocation(m_RendererID, name.c_str()), value);
+    }
+
+    void Shader::setVec2(const std::string &name, const glm::vec2 &value) const
+    {
+        glUniform2fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, &value[0]);
+    }
+    void Shader::setVec2(const std::string &name, float x, float y) const
+    {
+        glUniform2f(glGetUniformLocation(m_RendererID, name.c_str()), x, y);
+    }
+
+    void Shader::setVec3(const std::string &name, const glm::vec3 &value) const
+    {
+        glUniform3fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, &value[0]);
+    }
+    void Shader::setVec3(const std::string &name, float x, float y, float z) const
+    {
+        glUniform3f(glGetUniformLocation(m_RendererID, name.c_str()), x, y, z);
+    }
+
+    void Shader::setVec4(const std::string &name, const glm::vec4 &value) const
+    {
+        glUniform4fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, &value[0]);
+    }
+    void Shader::setVec4(const std::string &name, float x, float y, float z, float w)
+    {
+        glUniform4f(glGetUniformLocation(m_RendererID, name.c_str()), x, y, z, w);
+    }
+
+    void Shader::setMat2(const std::string &name, const glm::mat2 &mat) const
+    {
+        glUniformMatrix2fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+    }
+
+    void Shader::setMat3(const std::string &name, const glm::mat3 &mat) const
+    {
+        glUniformMatrix3fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+    }
+
+    void Shader::setMat4(const std::string &name, const glm::mat4 &mat) const
+    {
+        glUniformMatrix4fv(glGetUniformLocation(m_RendererID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
 } // namespace ORE

@@ -185,4 +185,23 @@ namespace ORE
 
         static Ref<ManagerVertexArray> Create();
     };
+
+    class ManagerTexture
+    {
+    public:
+        virtual ~ManagerTexture() = default;
+
+        virtual uint32_t GetWidth() const = 0;
+        virtual uint32_t GetHeight() const = 0;
+        virtual uint32_t GetRendererID() const = 0;
+
+        virtual void Bind(uint32_t slot = 0) const = 0;
+    };
+
+    class ManagerTexture2D : public ManagerTexture
+    {
+    public:
+        static Ref<ManagerTexture2D> Create(uint32_t width, uint32_t height);
+        static Ref<ManagerTexture2D> Create(const std::string &path);
+    };
 } // namespace ORE

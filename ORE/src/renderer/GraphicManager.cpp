@@ -2,6 +2,7 @@
 
 #include "VertexArray.h"
 #include "Buffer.h"
+#include "Texture.h"
 
 namespace ORE
 {
@@ -22,5 +23,15 @@ namespace ORE
     Ref<ManagerVertexArray> ManagerVertexArray::Create()
     {
         return CreateRef<VertexArray>();
+    }
+
+    Ref<ManagerTexture2D> ManagerTexture2D::Create(uint32_t width, uint32_t height)
+    {
+        return CreateRef<Texture>(width, height);
+    }
+
+    Ref<ManagerTexture2D> ManagerTexture2D::Create(const std::string &path)
+    {
+        return CreateRef<Texture>(path);
     }
 } // namespace ORE
