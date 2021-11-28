@@ -5,7 +5,6 @@
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch
@@ -39,3 +38,6 @@ out/
 CMakeFiles/
 task.txt
 *.rdc
+
+FrameBufer.h
+FrameBufer.cpp

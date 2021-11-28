@@ -204,4 +204,63 @@ namespace ORE
         static Ref<ManagerTexture2D> Create(uint32_t width, uint32_t height);
         static Ref<ManagerTexture2D> Create(const std::string &path);
     };
+
+    enum class ManagerFrameBufferTextureFormat
+    {
+        None = 0,
+
+        // Color
+        RGBA8,
+
+        // Depth/stencil
+        DEPTH24STENCIL8,
+
+        // Defaults
+        Depth = DEPTH24STENCIL8
+    };
+
+    struct ManagerFrameBufferTextureSpecification
+    {
+        ManagerFrameBufferTextureSpecification() = default;
+        ManagerFrameBufferTextureSpecification(ManagerFrameBufferTextureFormat format)
+            : TextureFormat(format) {}
+
+        ManagerFrameBufferTextureFormat TextureFormat = ManagerFrameBufferTextureFormat::None;
+        // TODO: filtering/wrap
+    };
+
+    struct FrameBufferAttachmentSpecification
+    {
+        FrameBufferAttachmentSpecification() = default;
+        FrameBufferAttachmentSpecification(std::initializer_list<ManagerFrameBufferTextureSpecification> attachments)
+            : Attachments(attachments) {}
+
+        std::vector<ManagerFrameBufferTextureSpecification> Attachments;
+    };
+
+    struct FrameBufferSpecification
+    {
+        uint32_t Width = 0, Height = 0;
+        FrameBufferAttachmentSpecification Attachments;
+        uint32_t Samples = 1;
+
+        bool SwapChainTarget = false;
+    };
+
+    class ManagerFrameBuffer
+    {
+    public:
+        virtual ~ManagerFrameBuffer() = default;
+
+        virtual void Bind() = 0;
+        virtual void Unbind() = 0;
+
+        virtual void Resize(uint32_t width, uint32_t height) = 0;
+
+        virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const = 0;
+
+        virtual const FrameBufferSpecification &GetSpecification() const = 0;
+
+        static Ref<ManagerFrameBuffer> Create(const FrameBufferSpecification &spec);
+    };
 } // namespace ORE

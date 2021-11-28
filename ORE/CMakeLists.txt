@@ -23,6 +23,7 @@ target_link_libraries(${PROJECT_NAME}
         stb_image
         glm
         assimp
+        imm32.lib
 )
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE "src/pch.h" "src/pch.cpp")

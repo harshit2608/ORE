@@ -98,6 +98,7 @@ add_library(${IMGUI_LIB_NAME}
 target_compile_definitions(${IMGUI_LIB_NAME}
     PRIVATE
         IMGUI_IMPL_OPENGL_LOADER_GLAD=1
+        IMGUI_ENABLE_WIN32_DEFAULT_IME_FUNCTIONS=1
 )
 
 target_include_directories(${IMGUI_LIB_NAME}
@@ -111,5 +112,9 @@ target_include_directories(${IMGUI_LIB_NAME}
 set(ASSIMP_LIB_NAME "assimp")
 message("=== BUILDING ${ASSIMP_LIB_NAME} ===")
 set(ASSIMP_INC_PATH ${ASSIMP_LIB_NAME}/include)
+set(ASSIMP_BUILD_TESTS OFF)
+set(ASSIMP_BUILD_DOCS OFF)
+# set(ASSIMP_NO_EXPORT ON)
+set(ASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT OFF)
 # set(ASSIMP_BUILD_ASSIMP_TOOLS OFF)
 add_subdirectory(${ASSIMP_LIB_NAME})

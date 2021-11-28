@@ -21,8 +21,9 @@ namespace ORE
     class Model
     {
     public:
-        Model(const std::string &path, bool gamma = false);
+        Model(const std::string &path, float scaleFactor, bool gamma = false);
         void Draw(Shader &shader);
+        float GetScaleFactor() const { return m_ScaleFactor; }
 
     private:
         std::vector<AssetTexture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
@@ -32,12 +33,14 @@ namespace ORE
 
         Mesh processMesh(aiMesh *mesh, const aiScene *scene);
         uint32_t TextureFromFile(const char *path, const std::string &directory, bool gamma = false);
+        void CheckForCache(const char *path, const char *binPath, bool &stb_free);
 
     private:
         std::vector<AssetTexture> textures_loaded;
         std::vector<Mesh> meshes;
         std::string directory;
         bool m_gammaCorrection;
+        float m_ScaleFactor;
         // Ref<ManagerTexture2D> m_texture;
     };
 } // namespace ORE
