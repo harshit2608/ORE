@@ -3,6 +3,7 @@
 #include "VertexArray.h"
 #include "Buffer.h"
 #include "Texture.h"
+#include "FrameBufer.h"
 
 namespace ORE
 {
@@ -34,4 +35,9 @@ namespace ORE
     {
         return CreateRef<Texture>(path);
     }
+
+    // Ref<ManagerFrameBuffer> ManagerFrameBuffer::Create(const FrameBufferSpecification &spec)
+    // {
+    //     return CreateRef<FrameBuffer>(spec);
+    // }
 } // namespace ORE

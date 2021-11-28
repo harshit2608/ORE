@@ -11,6 +11,10 @@
 #include "assetmanager/Mesh.h"
 #include "assetmanager/Model.h"
 
+// IMGUI==============================
+
+#include "imgui/ImGuiLayer.h"
+
 // MAIN===============================
 
 #include "main/EntryPoint.h"

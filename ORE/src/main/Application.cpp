@@ -7,6 +7,7 @@
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <stb_image.h>
+#include <glm/gtc/type_ptr.hpp>
 
 uint32_t SCREEN_WIDTH = 900;
 uint32_t SCREEN_HEIGHT = 700;
@@ -73,12 +74,14 @@ int main()
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     // glDisable(GL_DITHER);
 
-    // stbi_set_flip_vertically_on_load(1);
+    ORE::ImGuiLayer imguirender(window);
+    imguirender.OnAttach();
+    bool show_demo_window = true, show_another_window = false;
 
     ORE::Shader modelShader("assets/shaders/model.glsl");
     ORE::Shader skyboxShader("assets/shaders/skybox.glsl");
     // ORE::Shader blinphong("assets/shaders/blinphong.glsl");
-    ORE::Shader cubemapShader("assets/shaders/cubemap.glsl");
+    // ORE::Shader cubemapShader("assets/shaders/cubemap.glsl");
 
 #pragma MODELS_SECTION
     // ORE::Model AMG("assets/models/AMG/AMG.obj", 1.0f);
@@ -89,12 +92,12 @@ int main()
     // scaleFactor = barrel.GetScaleFactor();
     // ORE::Model city("assets/models/city/city.obj", 0.008f);
     // scaleFactor = city.GetScaleFactor();
-    ORE::Model helmet("assets/models/helmet/helmet.obj", 1.0f);
-    scaleFactor = helmet.GetScaleFactor();
+    // ORE::Model helmet("assets/models/helmet/helmet.obj", 1.0f);
+    // scaleFactor = helmet.GetScaleFactor();
     // ORE::Model sponza("assets/models/sponza/sponza.obj", 0.008f);
     // scaleFactor = sponza.GetScaleFactor();
-    // ORE::Model zorkiCamera("assets/models/zorkicamera/source/RC_zorki_Reduced/ZORKI_LENS.obj", 0.008f);
-    // scaleFactor = zorkiCamera.GetScaleFactor();
+    ORE::Model zorkiCamera("assets/models/zorkicamera/source/RC_zorki_Reduced/ZORKI_LENS.obj", 0.05f);
+    scaleFactor = zorkiCamera.GetScaleFactor();
 
 #pragma endregion
 
@@ -126,6 +129,7 @@ int main()
 // blinphong.setBool("floorTexture", 0);
 #pragma endregion
 
+#pragma SKYBOX_SETUP
     float skyboxVertices[] = {
         // positions
         -1.0f, 1.0f, -1.0f,
@@ -170,6 +174,16 @@ int main()
         -1.0f, -1.0f, 1.0f,
         1.0f, -1.0f, 1.0f};
 
+    ORE::Ref<ORE::ManagerVertexArray> SkyBoxvertexArray = ORE::ManagerVertexArray::Create();
+    ORE::Ref<ORE::ManagerVertexBuffer> SkyBoxvertexBuffer = ORE::ManagerVertexBuffer::Create(skyboxVertices, sizeof(skyboxVertices));
+    ORE::BufferLayout SkyBoxlayout = {
+        {ORE::ShaderDataType::Vec3, "a_Position"},
+        {ORE::ShaderDataType::Vec3, "a_Normal"},
+        {ORE::ShaderDataType::Vec2, "a_TexCoords"}};
+
+    SkyBoxvertexBuffer->SetLayout(SkyBoxlayout);
+    SkyBoxvertexArray->AddVertexBuffer(SkyBoxvertexBuffer);
+
     uint32_t skyboxVAO, skyboxVBO;
     glGenVertexArrays(1, &skyboxVAO);
     glGenBuffers(1, &skyboxVBO);
@@ -194,14 +208,7 @@ int main()
     skyboxShader.Bind();
     skyboxShader.setInt("skybox", 0);
 
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO &io = ImGui::GetIO();
-    (void)io;
-    ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 450");
-    bool show_demo_window = true, show_another_window = false;
+#pragma endregion
 
     ORE::Transformations entity = {glm::vec3(0.0f, 0.0f, 0.0f),
                                    glm::vec3(0.0f, 0.0f, 0.0f),
@@ -219,8 +226,6 @@ int main()
         processInput(window);
         glClearColor(0.1f, 0.1f, 0.1f, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // texture1.Bind(0);
-        // texture2.Bind(1);
         modelShader.Bind();
         // blinphong.Bind();
 
@@ -249,9 +254,9 @@ int main()
         // backpack.Draw(modelShader);
         // barrel.Draw(modelShader);
         // city.Draw(modelShader);
-        helmet.Draw(modelShader);
+        // helmet.Draw(modelShader);
         // sponza.Draw(modelShader);
-        // zorkiCamera.Draw(modelShader);
+        zorkiCamera.Draw(modelShader);
 #pragma endregion
 
         // blinphong.setMat4("projection", projection);
@@ -297,15 +302,19 @@ int main()
         glDepthFunc(GL_LESS); // set depth function back to default
 #pragma endregion
 
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
+        imguirender.Begin();
         ImGui::Begin("Main Controls");
         // ImGui::Text("Point light");
         ImGui::Text("Model transform");
-        ImGui::SliderFloat3("Model Translation", &entity.position.x, -10.0f, 10.0f);
-        ImGui::SliderFloat3("Model Rotation", &entity.rotation.x, -360.0f, 360.0f);
-        ImGui::SliderFloat3("Model Scale", &entity.scale.x, 0.0f, 15.0f);
+        // ImGui::SliderFloat3("Model Translation", &entity.position.x, -10.0f, 10.0f);
+        // ImGui::SliderFloat3("Model Rotation", &entity.rotation.x, -360.0f, 360.0f);
+        // ImGui::SliderFloat3("Model Scale", &entity.scale.x, 0.0f, 15.0f);
+        if (ImGui::TreeNodeEx((void *)1, ImGuiTreeNodeFlags_DefaultOpen, "Transform"))
+        {
+            ImGui::DragFloat3("Position", glm::value_ptr(entity.position), 0.1f);
+            ImGui::DragFloat3("Rotation", glm::value_ptr(entity.rotation), 0.1f);
+            ImGui::DragFloat3("Scale", glm::value_ptr(entity.scale), 0.1f);
+        }
 
         if (ImGui::Button("Reset model transform"))
         {
@@ -318,16 +327,12 @@ int main()
         ImGui::Text("Camera Controls");
         // ImGui::ShowDemoWindow(&show_demo_window);
         ImGui::End();
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        // ImGui::Render();
+        imguirender.End();
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
+    imguirender.OnDetach();
 
 #pragma RESOURCES_FREE
     // vertexArray->UnBind();
@@ -405,8 +410,6 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
     camera.ProcessMouseScroll(yoffset);
 }
 
-// renders the 3D scene
-// --------------------
 void renderScene(const ORE::Shader &shader)
 {
     // floor
