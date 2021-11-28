@@ -141,10 +141,65 @@ namespace ORE
         return Mesh(vertices, indices, textures);
     }
 
+    void Model::CheckForCache(const char *path, const char *binPath, bool &stb_free)
+    {
+        FILE *cachedFile = fopen(binPath, "rb");
+
+        // No cache file for texture exists. Load and save it
+        if (cachedFile == nullptr)
+        {
+            idata.data = stbi_load(path, &idata.width, &idata.height, &idata.channels, 0);
+            if (idata.data == nullptr)
+            {
+                ORE_CORE_ERROR("Failed to open texture at path: {0}", path);
+                exit(-1);
+            }
+
+            // Write the metadata and the actual image's data to the cache
+            FILE *outFile = fopen(binPath, "wb");
+            if (outFile == nullptr)
+            {
+                ORE_CORE_ERROR("Failed to create output binary file at path: {0}", binPath);
+                exit(-1);
+            }
+            fprintf(outFile, "%d %d %d\n", idata.width, idata.height, idata.channels);
+            fwrite(idata.data, sizeof(unsigned char) * (size_t)idata.width * idata.height * idata.channels, 1, outFile);
+
+            // Cleanup
+            fclose(outFile);
+            stb_free = true;
+            ORE_CORE_INFO("Created cache for image at path: {0}", path);
+        }
+        // Cache file exists, load that instead
+        else
+        {
+            // Get image metadata
+            if (fscanf(cachedFile, "%d %d %d\n", &idata.width, &idata.height, &idata.channels) == EOF)
+            {
+                ORE_CORE_ERROR("Invalid image metadata contained in file: {0}", binPath);
+            }
+
+            // Get the image's actual data
+            size_t dataSize = (size_t)idata.width * idata.height * idata.channels;
+            idata.data = new unsigned char[dataSize + 1];
+            fread(idata.data, sizeof(unsigned char) * dataSize, 1, cachedFile);
+            idata.data[dataSize] = '\0';
+
+            // Cleanup
+            fclose(cachedFile);
+            stb_free = false;
+        }
+    }
+
     uint32_t Model::TextureFromFile(const char *path, const std::string &directory, bool gamma)
     {
         std::string filename = std::string(path);
         filename = directory + '/' + filename;
+
+        std::string binPath(filename);
+        binPath = binPath.substr(0, binPath.find_last_of('.')) + ".bin";
+
+        CheckForCache(filename.c_str(), binPath.c_str());
 
         // Texture *m_texture = new Texture(filename);
         // m_texture = ManagerTexture2D::Create(filename);
@@ -178,11 +233,10 @@ namespace ORE
         }
         else
         {
-
             ORE_CORE_ERROR("Texture failed to load at path: {0}", path);
             stbi_image_free(data);
         }
-
+        
         return textureID;
     }
 } // namespace ORE

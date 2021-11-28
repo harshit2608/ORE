@@ -38,3 +38,6 @@ out/
 CMakeFiles/
 task.txt
 *.rdc
+
+FrameBufer.h
+FrameBufer.cpp

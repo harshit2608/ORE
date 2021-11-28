@@ -60,6 +60,16 @@ int main()
     }
     ORE::Context context(window);
     context.Init();
+
+    GLFWimage images[1];
+    images[0].pixels = stbi_load("assets/logo/logo.png", &images[0].width, &images[0].height, 0, 4); // rgba channels
+    if (!images[0].pixels)
+    {
+        ORE_CORE_ERROR("Fail to load logo {0}", images[0].pixels);
+    }
+    glfwSetWindowIcon(window, 1, images);
+    stbi_image_free(images[0].pixels);
+
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
