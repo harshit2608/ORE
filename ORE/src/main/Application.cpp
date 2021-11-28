@@ -309,17 +309,17 @@ int main()
         // ImGui::SliderFloat3("Model Translation", &entity.position.x, -10.0f, 10.0f);
         // ImGui::SliderFloat3("Model Rotation", &entity.rotation.x, -360.0f, 360.0f);
         // ImGui::SliderFloat3("Model Scale", &entity.scale.x, 0.0f, 15.0f);
-        if (ImGui::TreeNodeEx((void *)1, ImGuiTreeNodeFlags_DefaultOpen, "Transform"))
+        if (ImGui::TreeNode("Transform"))
         {
             ImGui::DragFloat3("Position", glm::value_ptr(entity.position), 0.1f);
             ImGui::DragFloat3("Rotation", glm::value_ptr(entity.rotation), 0.1f);
             ImGui::DragFloat3("Scale", glm::value_ptr(entity.scale), 0.1f);
-        }
-
-        if (ImGui::Button("Reset model transform"))
-        {
-            entity.position = entity.rotation = glm::vec3(0.0f);
-            entity.scale = glm::vec3(1.0f * scaleFactor);
+            if (ImGui::Button("Reset model transform"))
+            {
+                entity.position = entity.rotation = glm::vec3(0.0f);
+                entity.scale = glm::vec3(1.0f * scaleFactor);
+            }
+            ImGui::TreePop();
         }
 
         ImGui::Text("Light Controls");

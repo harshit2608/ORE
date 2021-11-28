@@ -98,6 +98,7 @@ add_library(${IMGUI_LIB_NAME}
 target_compile_definitions(${IMGUI_LIB_NAME}
     PRIVATE
         IMGUI_IMPL_OPENGL_LOADER_GLAD=1
+        IMGUI_ENABLE_WIN32_DEFAULT_IME_FUNCTIONS=1
 )
 
 target_include_directories(${IMGUI_LIB_NAME}
