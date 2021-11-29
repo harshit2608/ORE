@@ -110,11 +110,12 @@ target_include_directories(${IMGUI_LIB_NAME}
 
 # ASSIMP=====================================================================================
 set(ASSIMP_LIB_NAME "assimp")
-message("=== BUILDING ${ASSIMP_LIB_NAME} ===")
-set(ASSIMP_INC_PATH ${ASSIMP_LIB_NAME}/include)
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(ASSIMP_BUILD_TESTS OFF)
 set(ASSIMP_BUILD_DOCS OFF)
 # set(ASSIMP_NO_EXPORT ON)
 set(ASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT OFF)
 # set(ASSIMP_BUILD_ASSIMP_TOOLS OFF)
+message("=== BUILDING ${ASSIMP_LIB_NAME} ===")
+set(ASSIMP_INC_PATH ${ASSIMP_LIB_NAME}/include)
 add_subdirectory(${ASSIMP_LIB_NAME})

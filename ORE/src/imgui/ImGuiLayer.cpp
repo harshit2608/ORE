@@ -4,6 +4,7 @@
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
+#include <stb_image_write.h>
 
 // TEMPORARY
 #include <glad/glad.h>
@@ -41,8 +42,8 @@ namespace ORE
             style.Colors[ImGuiCol_WindowBg].w = 1.0f;
         }
 
-        // SetDarkThemeColors();
-        ImGui::StyleColorsDark();
+        SetDarkThemeColors();
+        // ImGui::StyleColorsDark();
         // Setup Platform/Renderer bindings
         ImGui_ImplGlfw_InitForOpenGL(m_WindowHandle, true);
         ImGui_ImplOpenGL3_Init("#version 410");
@@ -129,5 +130,21 @@ namespace ORE
         colors[ImGuiCol_TitleBg] = blackMain;
         colors[ImGuiCol_TitleBgActive] = blackMain;
         colors[ImGuiCol_TitleBgCollapsed] = blackMain;
+    }
+
+    void ImGuiLayer::saveImage(char *filepath)
+    {
+        int width, height;
+        glfwGetFramebufferSize(m_WindowHandle, &width, &height);
+        GLsizei nrChannels = 3;
+        GLsizei stride = nrChannels * width;
+        stride += (stride % 4) ? (4 - stride % 4) : 0;
+        GLsizei bufferSize = stride * height;
+        std::vector<char> buffer(bufferSize);
+        glPixelStorei(GL_PACK_ALIGNMENT, 4);
+        glReadBuffer(GL_FRONT);
+        glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer.data());
+        stbi_flip_vertically_on_write(true);
+        stbi_write_png(filepath, width, height, nrChannels, buffer.data(), stride);
     }
 } // namespace ORE
