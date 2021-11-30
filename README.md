@@ -27,6 +27,8 @@ to clone the necessary submodules.
 
 ## How to build ORE?
 
+<h5>Make sure you have python installed on your system</h5>
+
 After cloning remove run `build.bat`
 To build ORE you need to have [CMAKE](https://cmake.org/download/)
 
@@ -55,8 +57,3 @@ cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ..
 <h4>Building ORE on Linux</h4>
 
 **PROJECT IS UNDERDEVELOPMENT AND HASN'T BEEN TESTED ON LINUX!!**
-
-<hr/>
-
-<h2>TODO</h2>
-Adding a new place to store assets. (Probably Gdrive or mega)
