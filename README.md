@@ -27,6 +27,7 @@ to clone the necessary submodules.
 
 ## How to build ORE?
 
+After cloning remove run `build.bat`
 To build ORE you need to have [CMAKE](https://cmake.org/download/)
 
 <h4>Building ORE on windows</h4>
@@ -58,4 +59,4 @@ cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ..
 <hr/>
 
 <h2>TODO</h2>
-Adding a new place to store assets. (Probablye Gdrive or mega)
+Adding a new place to store assets. (Probably Gdrive or mega)

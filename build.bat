@@ -1,3 +1,4 @@
+call py scripts/Setup.py
 mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..

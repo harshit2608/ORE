@@ -30,6 +30,10 @@
 *.out
 *.app
 
+# Python
+__pycache__/
+
+# Visual Studio
 .vs/
 .vscode/
 build/
@@ -37,10 +41,14 @@ Build/
 out/
 CMakeFiles/
 task.txt
+
+# RenderDoc
 *.rdc
-scripts/
 
 FrameBufer.h
 FrameBufer.cpp
 
 ORE/assets/models/gun/
+*.zip
+assets-orig/
+downloads/
