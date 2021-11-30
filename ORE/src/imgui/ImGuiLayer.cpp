@@ -132,7 +132,7 @@ namespace ORE
         colors[ImGuiCol_TitleBgCollapsed] = blackMain;
     }
 
-    void ImGuiLayer::saveImage(char *filepath)
+    void ImGuiLayer::saveImage(const char *filepath)
     {
         int width, height;
         glfwGetFramebufferSize(m_WindowHandle, &width, &height);

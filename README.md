@@ -54,3 +54,8 @@ cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ..
 <h4>Building ORE on Linux</h4>
 
 **PROJECT IS UNDERDEVELOPMENT AND HASN'T BEEN TESTED ON LINUX!!**
+
+<hr/>
+
+<h2>TODO</h2>
+Adding a new place to store assets. (Probablye Gdrive or mega)

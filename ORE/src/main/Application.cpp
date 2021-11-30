@@ -46,6 +46,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -76,7 +77,8 @@ int main()
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_UNAVAILABLE);
 
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+    // glEnable(GL_CULL_FACE);
+    // glEnable(GL_MULTISAMPLE);
     // glCullFace(GL_BACK);
     glDisable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -88,26 +90,28 @@ int main()
     ORE::Shader skyboxShader("assets/shaders/skybox.glsl");
     // ORE::Shader blinphong("assets/shaders/blinphong.glsl");
     // ORE::Shader cubemap("assets/shaders/cubemap.glsl");
-    // ORE::Shader lightShader("assets/shaders/lighting.glsl");
+    ORE::Shader lightCubeShader("assets/shaders/lightcube.glsl");
 
-    ORE::Ref<ORE::ManagerVertexArray> m_SkyBoxvertexArray, m_CubevertexArray;
-    ORE::Ref<ORE::ManagerVertexBuffer> m_SkyBoxvertexBuffer, m_CubevertexBuffer;
+    ORE::Ref<ORE::ManagerVertexArray> m_SkyBoxvertexArray, m_CubevertexArray, m_LightCubevertexArray;
+    ORE::Ref<ORE::ManagerVertexBuffer> m_SkyBoxvertexBuffer, m_CubevertexBuffer, m_LightCubevertexBuffer;
 
 #pragma MODELS_SECTION
     // ORE::Model backpack("assets/models/backpack/backpack.obj", 1.0f);
     // scaleFactor = backpack.GetScaleFactor();
     // ORE::Model barrel("assets/models/barrel/Barrel_01.obj", 1.0f);
     // scaleFactor = barrel.GetScaleFactor();
-    ORE::Model bedroom("assets/models/bedroom/iscv2.obj", 0.05f);
-    scaleFactor = bedroom.GetScaleFactor();
+    // ORE::Model bedroom("assets/models/bedroom/iscv2.obj", 0.05f);
+    // scaleFactor = bedroom.GetScaleFactor();
     // ORE::Model city("assets/models/city/city.obj", 0.008f);
     // scaleFactor = city.GetScaleFactor();
+    // ORE::Model gun("assets/models/gun/Cerberus_LP.FBX", 0.08f);
+    // scaleFactor = gun.GetScaleFactor();
     // ORE::Model helmet("assets/models/helmet/helmet.obj", 1.0f);
     // scaleFactor = helmet.GetScaleFactor();
     // ORE::Model sponza("assets/models/sponza/sponza.obj", 0.008f);
     // scaleFactor = sponza.GetScaleFactor();
-    // ORE::Model zorkiCamera("assets/models/zorkicamera/source/RC_zorki_Reduced/ZORKI_LENS.obj", 0.05f);
-    // scaleFactor = zorkiCamera.GetScaleFactor();
+    ORE::Model zorkiCamera("assets/models/zorkicamera/source/RC_zorki_Reduced/ZORKI_LENS.obj", 0.05f);
+    scaleFactor = zorkiCamera.GetScaleFactor();
 #pragma endregion
 
 #pragma BLINN_PHONG
@@ -140,7 +144,8 @@ int main()
 
 #pragma SKYBOX_SETUP
     ORE::skyBoxAttach(m_SkyBoxvertexArray, m_SkyBoxvertexBuffer);
-    ORE::cubeAttach(m_CubevertexArray, m_CubevertexBuffer);
+    // ORE::cubeAttach(m_CubevertexArray, m_CubevertexBuffer);
+    ORE::lightCubeAttach(m_LightCubevertexArray, m_LightCubevertexBuffer);
 
     std::vector<std::string> faces{
         ("assets/textures/skybox/right.jpg"),
@@ -169,10 +174,13 @@ int main()
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(1.0f, 1.0f, 1.0f)};
 
-    glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
-    glm::vec4 m_BackgroundColor = {0.1f, 0.1f, 0.1f, 1.0f};
+    glm::vec3 lightPos(0.0f, 3.0f, 0.0f);
+    glm::vec4 m_BackgroundColor = {0.1f, 0.1f, 0.1f, 1.0f}, m_LightColor = {1.0f, 1.0f, 1.0f, 1.0f};
     float lightIntensity = 0.05f;
-    bool load_skybox = false, light_bloom = false, polygon_mode = false;
+    bool load_skybox = 0, light_bloom = 0, polygon_mode = 0, anti_aliasing = 0, cull_face = 0;
+    static int image_count = 0;
+    std::string res = "Image.png";
+    const char *image_outDir = res.c_str();
 
     ORE::ImGuiLayer imguirender(window);
     imguirender.OnAttach();
@@ -215,11 +223,12 @@ int main()
         modelShader.setMat4("model", model);
         // backpack.Draw(modelShader);
         // barrel.Draw(modelShader);
-        bedroom.Draw(modelShader);
+        // bedroom.Draw(modelShader);
         // city.Draw(modelShader);
+        // gun.Draw(modelShader);
         // helmet.Draw(modelShader);
         // sponza.Draw(modelShader);
-        // zorkiCamera.Draw(modelShader);
+        zorkiCamera.Draw(modelShader);
 #pragma endregion
 
         // blinphong.setMat4("projection", projection);
@@ -249,9 +258,28 @@ int main()
         // uint32_t count = vertexArray->GetIndexBuffer()->GetCount();
         // vertexArray->Bind();
         // glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
-        m_CubevertexArray->Bind();
+        // m_CubevertexArray->Bind();
+        // glDrawArrays(GL_TRIANGLES, 0, 36);
+        // m_CubevertexArray->UnBind();
+
+        lightCubeShader.Bind();
+        lightCubeShader.setMat4("projection", projection);
+        lightCubeShader.setMat4("view", view);
+        glm::mat4 lightCubemodel(1.0f);
+
+#pragma MODEL_RENDER
+        // Transform matrix for mesh
+        lightCubemodel = glm::translate(lightCubemodel, lights.position);
+        lightCubemodel = glm::rotate(lightCubemodel, glm::radians(lights.rotation.x), {1.0f, 0.0f, 0.0f});
+        lightCubemodel = glm::rotate(lightCubemodel, glm::radians(lights.rotation.y), {0.0f, 1.0f, 0.0f});
+        lightCubemodel = glm::rotate(lightCubemodel, glm::radians(lights.rotation.z), {0.0f, 0.0f, 1.0f});
+        lightCubemodel = glm::scale(lightCubemodel, lights.scale);
+        lightCubeShader.setMat4("model", lightCubemodel);
+        lightCubeShader.setVec4("lightColor", m_LightColor);
+
+        m_LightCubevertexArray->Bind();
         glDrawArrays(GL_TRIANGLES, 0, 36);
-        m_CubevertexArray->UnBind();
+        m_LightCubevertexArray->UnBind();
 
 #pragma CUBEMAP_RENDER
         glDepthFunc(GL_LEQUAL);
@@ -275,6 +303,16 @@ int main()
         ImGui::Begin("Menu");
         ImGui::Checkbox("Load Skybox", &load_skybox);
         ImGui::Checkbox("WireFrame Mode", &polygon_mode);
+        ImGui::Checkbox("Anti Aliasing", &anti_aliasing);
+        ImGui::Checkbox("CullFace", &cull_face);
+        if (cull_face)
+        {
+            glEnable(GL_CULL_FACE);
+        }
+        else
+        {
+            glDisable(GL_CULL_FACE);
+        }
         ImGui::ColorEdit4("BackGround Color", glm::value_ptr(m_BackgroundColor));
         if (polygon_mode)
         {
@@ -284,9 +322,21 @@ int main()
         {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         }
+        if (anti_aliasing)
+        {
+            glEnable(GL_MULTISAMPLE);
+        }
+        else
+        {
+            glDisable(GL_MULTISAMPLE);
+        }
         if (ImGui::Button("Take ScreenShot"))
         {
-            imguirender.saveImage("Image.png");
+            imguirender.saveImage(image_outDir);
+            image_count++;
+            res = "Image" + std::to_string(image_count);
+            res += ".png";
+            image_outDir = res.c_str();
         }
         ImGui::End();
 
@@ -303,20 +353,22 @@ int main()
 
         ImGui::Separator();
         ImGui::Text("Light Controls");
-        // ImGui::DragFloat3("Position##lightPosition", glm::value_ptr(lights.position), 0.1f);
-        // ImGui::DragFloat3("Rotation##lightRotation", glm::value_ptr(lights.rotation), 0.1f);
-        // ImGui::DragFloat3("Scale##lightScale", glm::value_ptr(lights.scale), 0.1f);
-        // // ImGui::ColorPicker3("Color##lightColor", light_color);
-        // if (ImGui::Button("Reset Light transform"))
-        // {
-        //     lights.position = lights.rotation = glm::vec3(0.0f);
-        //     lights.scale = glm::vec3(1.0f);
-        // }
-        // ImGui::DragFloat("Intensity", &lightIntensity, 0.05f);
-        // ImGui::Checkbox("Bloom", &light_bloom);
+        ImGui::DragFloat3("Position##lightPosition", glm::value_ptr(lights.position), 0.1f);
+        ImGui::DragFloat3("Rotation##lightRotation", glm::value_ptr(lights.rotation), 0.1f);
+        ImGui::DragFloat3("Scale##lightScale", glm::value_ptr(lights.scale), 0.1f);
+        ImGui::ColorEdit4("Light Color", glm::value_ptr(m_LightColor));
+        // ImGui::ColorPicker3("Color##lightColor", light_color);
+        if (ImGui::Button("Reset Light transform"))
+        {
+            lights.position = lights.rotation = glm::vec3(0.0f);
+            lights.scale = glm::vec3(1.0f);
+        }
+        ImGui::DragFloat("Intensity", &lightIntensity, 0.05f);
+        ImGui::Checkbox("Bloom", &light_bloom);
 
         ImGui::Separator();
         ImGui::Text("Camera Controls");
+        ImGui::DragFloat("Zoom", &camera.Zoom, 0.1f);
         // ImGui::ShowDemoWindow(&show_demo_window);
         ImGui::End();
 
@@ -328,9 +380,11 @@ int main()
 
     imguirender.OnDetach();
     modelShader.UnBind();
-    ORE::skyBoxDetach(m_SkyBoxvertexArray, m_SkyBoxvertexBuffer);
-    ORE::cubeDetach(m_CubevertexArray, m_CubevertexBuffer);
+    lightCubeShader.UnBind();
     // blinphong.UnBind();
+    ORE::skyBoxDetach(m_SkyBoxvertexArray, m_SkyBoxvertexBuffer);
+    ORE::lightCubeDetach(m_LightCubevertexArray, m_LightCubevertexBuffer);
+    // ORE::cubeDetach(m_CubevertexArray, m_CubevertexBuffer);
     glfwTerminate();
     return 0;
 }
