@@ -112,6 +112,7 @@ int main()
     // scaleFactor = sponza.GetScaleFactor();
     ORE::Model zorkiCamera("assets/models/zorkicamera/source/RC_zorki_Reduced/ZORKI_LENS.obj", 0.05f);
     scaleFactor = zorkiCamera.GetScaleFactor();
+
 #pragma endregion
 
 #pragma BLINN_PHONG

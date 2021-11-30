@@ -7,11 +7,52 @@
  <img alt="OpenGL" src="https://img.shields.io/badge/OpenGL-%23FFFFFF.svg?&logo=opengl"/>
  </p>
 
+ <p align="center">
+ <img alt="Repo Size" src="https://img.shields.io/github/repo-size/harshit2608/ORE">
+ <img alt="total lines" src ="https://img.shields.io/tokei/lines/github/harshit2608/ORE"/></p>
+
 ## What is ORE?
 
-ORE(OpenGL Rendering Engine) is a simple erndering engine that will allow the user to load and view their 3D models in realtime.
+ORE(OpenGL Rendering Engine) is a rendering engine with great and easy to use UI that allows the user to load and view their 3D models in realtime.
 
 PS: I am developing this project for my college minor assessment
+
+<!-- [MODEL CREDITS](resources/LICENSE "Model License") -->
+
+## ORE Inside Previews
+
+Some of the images are taken using ORE inbuilt screenshot system.
+
+![Zorki Camera](resources/Camera_SkyBox.png "Zorki Camera with Skybox")
+
+![Gun](resources/Gun_with_UI.png "Gun with UI")
+
+## ORE Controls and Features
+
+<h6> Controls</h6>
+
+| Action         | Key             |
+| -------------- | --------------- |
+| Move Forward   | W               |
+| Move Backward  | S               |
+| Move Left      | A               |
+| Move Right     | D               |
+| Mouse Movement | Left Alt + Drag |
+| Zoom in/out    | Mouse Scroll    |
+
+<h6> Features</h6>
+
+| Features                | Status             |
+| ----------------------- | ------------------ |
+| Anti Aliasing           | :heavy_check_mark: |
+| WireFrame Mode          | :heavy_check_mark: |
+| SkyBox Loading          | :heavy_check_mark: |
+| ViewPort Camera         | :heavy_check_mark: |
+| Screenshot System       | :heavy_check_mark: |
+| BackGround Color Change | :heavy_check_mark: |
+| Logging System          | :heavy_check_mark: |
+| Transformation System   | :heavy_check_mark: |
+| Performance Viewer      | :heavy_check_mark: |
 
 ## Getting Started
 
@@ -29,7 +70,8 @@ to clone the necessary submodules.
 
 <h5>Make sure you have python installed on your system</h5>
 
-After cloning remove run `build.bat`
+After cloning the repository run `build.bat` and select yes to install the `googledrivedownloader` package to get the asets from `gdrive`
+
 To build ORE you need to have [CMAKE](https://cmake.org/download/)
 
 <h4>Building ORE on windows</h4>

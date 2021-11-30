@@ -47,9 +47,8 @@ task.txt
 
 FrameBufer.h
 FrameBufer.cpp
-
-ORE/assets/models/gun/
 *.zip
 assets-orig/
 downloads/
 ORE/assets/
+ORE/assets-orig/
