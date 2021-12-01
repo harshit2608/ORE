@@ -50,5 +50,6 @@ FrameBufer.cpp
 *.zip
 assets-orig/
 downloads/
-ORE/assets/
-ORE/assets-orig/
+assets/
+assets-orig/
+temp/

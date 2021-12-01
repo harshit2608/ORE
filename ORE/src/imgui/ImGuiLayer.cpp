@@ -31,10 +31,6 @@ namespace ORE
         // io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoTaskBarIcons;
         // io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoMerge;
 
-        // Setup Dear ImGui style
-        // ImGui::StyleColorsDark();
-        // ImGui::StyleColorsClassic();
-
         ImGuiStyle &style = ImGui::GetStyle();
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
@@ -42,8 +38,9 @@ namespace ORE
             style.Colors[ImGuiCol_WindowBg].w = 1.0f;
         }
 
-        SetDarkThemeColors();
-        // ImGui::StyleColorsDark();
+        // SetDarkThemeColors();
+        // ImGui::StyleColorsClassic();
+        ImGui::StyleColorsDark();
         // Setup Platform/Renderer bindings
         ImGui_ImplGlfw_InitForOpenGL(m_WindowHandle, true);
         ImGui_ImplOpenGL3_Init("#version 410");

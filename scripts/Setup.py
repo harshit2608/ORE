@@ -11,7 +11,10 @@ start_time = datetime.now()
 
 zip_download_location = 'downloads/assets.zip'
 temp = 'downloads/'
-gdd.download_file_from_google_drive(file_id='1FVGGgka1O-eW5TIr7D-y6sc6dcCT6nM6' , dest_path=zip_download_location, unzip=False,showsize=True,overwrite=True)
+
+# https://drive.google.com/file/d/1wUFCq1_UBkaw59TXhqiiALXoSghsQ-X6/view?usp=sharing
+
+gdd.download_file_from_google_drive(file_id='1wUFCq1_UBkaw59TXhqiiALXoSghsQ-X6' , dest_path=zip_download_location, unzip=False,showsize=True,overwrite=True)
 file_name = zip_download_location
 
 with ZipFile(file_name, 'r') as zip:

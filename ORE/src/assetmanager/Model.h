@@ -18,6 +18,12 @@
 
 namespace ORE
 {
+    struct ImageData
+    {
+        unsigned char *data;
+        int width, height, channels;
+    };
+
     class Model
     {
     public:
@@ -33,7 +39,7 @@ namespace ORE
 
         Mesh processMesh(aiMesh *mesh, const aiScene *scene);
         uint32_t TextureFromFile(const char *path, const std::string &directory, bool gamma = false);
-        void CheckForCache(const char *path, const char *binPath, bool &stb_free);
+        void CheckForCache(const char *path, const char *binPath, ImageData &imageData);
 
     private:
         std::vector<AssetTexture> textures_loaded;

@@ -141,54 +141,53 @@ namespace ORE
         return Mesh(vertices, indices, textures);
     }
 
-    void Model::CheckForCache(const char *path, const char *binPath, bool &stb_free)
+    void Model::CheckForCache(const char *path, const char *binPath, ImageData &imageData)
     {
-        // FILE *cachedFile = fopen(binPath, "rb");
+        FILE *cachedFile = fopen(binPath, "rb");
+        // No cache file for texture exists. Load and save it
+        if (cachedFile == nullptr)
+        {
+            imageData.data = stbi_load(path, &imageData.width, &imageData.height, &imageData.channels, 0);
+            if (imageData.data == nullptr)
+            {
+                ORE_CORE_ERROR("Failed to open texture at path: {0}", path);
+                exit(-1);
+            }
 
-        // // No cache file for texture exists. Load and save it
-        // if (cachedFile == nullptr)
-        // {
-        //     idata.data = stbi_load(path, &idata.width, &idata.height, &idata.channels, 0);
-        //     if (idata.data == nullptr)
-        //     {
-        //         ORE_CORE_ERROR("Failed to open texture at path: {0}", path);
-        //         exit(-1);
-        //     }
+            // Write the metadata and the actual image's data to the cache
+            FILE *outFile = fopen(binPath, "wb");
+            if (outFile == nullptr)
+            {
+                ORE_CORE_ERROR("Failed to create output binary file at path: {0}", binPath);
+                exit(-1);
+            }
+            fprintf(outFile, "%d %d %d\n", imageData.width, imageData.height, imageData.channels);
+            fwrite(imageData.data, sizeof(unsigned char) * (size_t)imageData.width * imageData.height * imageData.channels, 1, outFile);
 
-        //     // Write the metadata and the actual image's data to the cache
-        //     FILE *outFile = fopen(binPath, "wb");
-        //     if (outFile == nullptr)
-        //     {
-        //         ORE_CORE_ERROR("Failed to create output binary file at path: {0}", binPath);
-        //         exit(-1);
-        //     }
-        //     fprintf(outFile, "%d %d %d\n", idata.width, idata.height, idata.channels);
-        //     fwrite(idata.data, sizeof(unsigned char) * (size_t)idata.width * idata.height * idata.channels, 1, outFile);
+            // Cleanup
+            fclose(outFile);
+            ORE_CORE_INFO("Created cache for image at path: {0}", path);
+        }
 
-        //     // Cleanup
-        //     fclose(outFile);
-        //     stb_free = true;
-        //     ORE_CORE_INFO("Created cache for image at path: {0}", path);
-        // }
-        // // Cache file exists, load that instead
-        // else
-        // {
-        //     // Get image metadata
-        //     if (fscanf(cachedFile, "%d %d %d\n", &idata.width, &idata.height, &idata.channels) == EOF)
-        //     {
-        //         ORE_CORE_ERROR("Invalid image metadata contained in file: {0}", binPath);
-        //     }
+        // Cache file exists, load that instead
+        else
+        {
+            // Get image metadata
+            if (fscanf(cachedFile, "%d %d %d\n", &imageData.width, &imageData.height, &imageData.channels) == EOF)
+            {
+                ORE_CORE_ERROR("Invalid image metadata contained in file: {0}", binPath);
+            }
 
-        //     // Get the image's actual data
-        //     size_t dataSize = (size_t)idata.width * idata.height * idata.channels;
-        //     idata.data = new unsigned char[dataSize + 1];
-        //     fread(idata.data, sizeof(unsigned char) * dataSize, 1, cachedFile);
-        //     idata.data[dataSize] = '\0';
+            // Get the image's actual data
+            size_t dataSize = (size_t)imageData.width * imageData.height * imageData.channels;
+            imageData.data = new unsigned char[dataSize + 1];
+            fread(imageData.data, sizeof(unsigned char) * dataSize, 1, cachedFile);
+            imageData.data[dataSize] = '\0';
 
-        //     // Cleanup
-        //     fclose(cachedFile);
-        //     stb_free = false;
-        // }
+            // Cleanup
+            fclose(cachedFile);
+            ORE_CORE_INFO("Loaded cache at path: {0}", binPath);
+        }
     }
 
     uint32_t Model::TextureFromFile(const char *path, const std::string &directory, bool gamma)
@@ -198,8 +197,9 @@ namespace ORE
 
         std::string binPath(filename);
         binPath = binPath.substr(0, binPath.find_last_of('.')) + ".bin";
+        ImageData imageData = {};
 
-        // CheckForCache(filename.c_str(), binPath.c_str());
+        CheckForCache(filename.c_str(), binPath.c_str(), imageData);
 
         // Texture *m_texture = new Texture(filename);
         // m_texture = ManagerTexture2D::Create(filename);
@@ -208,33 +208,56 @@ namespace ORE
         uint32_t textureID;
         glGenTextures(1, &textureID);
 
-        int width, height, nrComponents;
-        unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
-        if (data)
+        // int width, height, channels;
+        // imageData.data = stbi_load(filename.c_str(), &imageData.width, &imageData.height, &imageData.channels, 0);
+        if (imageData.data)
         {
-            GLenum format;
-            if (nrComponents == 1)
+            GLenum format, internalFormat;
+            if (imageData.channels == 1)
+            {
                 format = GL_RED;
-            else if (nrComponents == 3)
+                internalFormat = GL_R8;
+            }
+            else if (imageData.channels == 2)
+            {
+                format = GL_RG;
+                internalFormat = GL_RG8;
+            }
+            else if (imageData.channels == 3)
+            {
                 format = GL_RGB;
-            else if (nrComponents == 4)
+                internalFormat = GL_RGB8;
+            }
+            else if (imageData.channels == 4)
+            {
                 format = GL_RGBA;
+                internalFormat = GL_RGBA8;
+            }
+            else
+            {
+                ORE_CORE_ERROR("Image loaded isn't in any of the supported formats! (Supported: RGB, RGBA)");
+                stbi_image_free(imageData.data);
+
+                glDeleteTextures(1, &textureID);
+                exit(-1);
+            }
 
             glBindTexture(GL_TEXTURE_2D, textureID);
-            glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
+            glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, imageData.width, imageData.height, 0, format, GL_UNSIGNED_BYTE, imageData.data);
 
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-            stbi_image_free(data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+            stbi_image_free(imageData.data);
+            // delete[] imageData.data;
         }
         else
         {
             ORE_CORE_ERROR("Texture failed to load at path: {0}", path);
-            stbi_image_free(data);
+            stbi_image_free(imageData.data);
         }
 
         return textureID;

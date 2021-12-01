@@ -35,6 +35,19 @@ float lastY = SCREEN_HEIGHT / 2.0f;
 bool firstMouse = true;
 float scaleFactor = 1.0f;
 
+static void HelpMarker(const char *desc)
+{
+    ImGui::TextDisabled("(?)");
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+        ImGui::TextUnformatted(desc);
+        ImGui::PopTextWrapPos();
+        ImGui::EndTooltip();
+    }
+}
+
 int main()
 {
     ORE::Log::Init();
@@ -96,6 +109,7 @@ int main()
     ORE::Ref<ORE::ManagerVertexBuffer> m_SkyBoxvertexBuffer, m_CubevertexBuffer, m_LightCubevertexBuffer;
 
 #pragma MODELS_SECTION
+    ORE::Timer tm("Model Loading");
     // ORE::Model backpack("assets/models/backpack/backpack.obj", 1.0f);
     // scaleFactor = backpack.GetScaleFactor();
     // ORE::Model barrel("assets/models/barrel/Barrel_01.obj", 1.0f);
@@ -106,12 +120,30 @@ int main()
     // scaleFactor = city.GetScaleFactor();
     // ORE::Model gun("assets/models/gun/Cerberus_LP.FBX", 0.08f);
     // scaleFactor = gun.GetScaleFactor();
+    // ORE::Model hanuman("assets/models/hanuman/source/Hanuman/Hanuman.fbx", 0.05f);
+    // scaleFactor = hanuman.GetScaleFactor();
     // ORE::Model helmet("assets/models/helmet/helmet.obj", 1.0f);
     // scaleFactor = helmet.GetScaleFactor();
     // ORE::Model sponza("assets/models/sponza/sponza.obj", 0.008f);
     // scaleFactor = sponza.GetScaleFactor();
     ORE::Model zorkiCamera("assets/models/zorkicamera/source/RC_zorki_Reduced/ZORKI_LENS.obj", 0.05f);
     scaleFactor = zorkiCamera.GetScaleFactor();
+
+    // ORE::Model plazaNightTime("assets/models/plaza-night-time/source/plaza01/plaza01_night.FBX", 0.05f);
+    // scaleFactor = plazaNightTime.GetScaleFactor();
+
+    // ORE::Model mirrorEdgeAppartment("assets/models/mirrors_edge_apartment/scene.gltf", 0.008f);
+    // scaleFactor = mirrorEdgeAppartment.GetScaleFactor();
+    // ORE::Model scifi_corridor("assets/models/scifi_corridor/source/hallway/hallway.FBX", 0.05f);
+    // scaleFactor = scifi_corridor.GetScaleFactor();
+    // ORE::Model american_muscle_71("assets/models/american_muscle_71/source/Phoenix445.fbx", 0.05f);
+    // scaleFactor = american_muscle_71.GetScaleFactor();
+    // ORE::Model datsun1972("assets/models/1972_datsun_gt/source/datsun240k.fbx", 0.05f);
+    // scaleFactor = datsun1972.GetScaleFactor();
+    // ORE::Model porsche911_1975("assets/models/1975_porsche_911_930_turbo/scene.gltf", 0.05f);
+    // scaleFactor = porsche911_1975.GetScaleFactor();
+    tm.PrintTime();
+    // vector<std::string> modelName;
 
 #pragma endregion
 
@@ -178,7 +210,8 @@ int main()
     glm::vec3 lightPos(0.0f, 3.0f, 0.0f);
     glm::vec4 m_BackgroundColor = {0.1f, 0.1f, 0.1f, 1.0f}, m_LightColor = {1.0f, 1.0f, 1.0f, 1.0f};
     float lightIntensity = 0.05f;
-    bool load_skybox = 0, light_bloom = 0, polygon_mode = 0, anti_aliasing = 0, cull_face = 0;
+    bool load_skybox = 0, light_bloom = 0, polygon_mode = 0, anti_aliasing = 0, cull_face = 0, imguiUITheme = 0;
+    ;
     static int image_count = 0;
     std::string res = "Image.png";
     const char *image_outDir = res.c_str();
@@ -222,14 +255,25 @@ int main()
         modelShader.setMat4("projection", projection);
         modelShader.setMat4("view", view);
         modelShader.setMat4("model", model);
+
         // backpack.Draw(modelShader);
         // barrel.Draw(modelShader);
         // bedroom.Draw(modelShader);
         // city.Draw(modelShader);
         // gun.Draw(modelShader);
+        // hanuman.Draw(modelShader);
         // helmet.Draw(modelShader);
         // sponza.Draw(modelShader);
         zorkiCamera.Draw(modelShader);
+
+        // plazaNightTime.Draw(modelShader);
+
+        // mirrorEdgeAppartment.Draw(modelShader);
+        // scifi_corridor.Draw(modelShader);
+        // american_muscle_71.Draw(modelShader);
+        // porsche911_1975.Draw(modelShader);
+        // datsun1972.Draw(modelShader);
+        // tm.PrintTime();
 #pragma endregion
 
         // blinphong.setMat4("projection", projection);
@@ -302,6 +346,7 @@ int main()
 #pragma endregion
 
         ImGui::Begin("Menu");
+        ImGui::Checkbox("ImGui Purple UI", &imguiUITheme);
         ImGui::Checkbox("Load Skybox", &load_skybox);
         ImGui::Checkbox("WireFrame Mode", &polygon_mode);
         ImGui::Checkbox("Anti Aliasing", &anti_aliasing);
@@ -331,6 +376,14 @@ int main()
         {
             glDisable(GL_MULTISAMPLE);
         }
+        if (imguiUITheme)
+        {
+            imguirender.SetDarkThemeColors();
+        }
+        else
+        {
+            ImGui::StyleColorsDark();
+        }
         if (ImGui::Button("Take ScreenShot"))
         {
             imguirender.saveImage(image_outDir);
@@ -339,6 +392,7 @@ int main()
             res += ".png";
             image_outDir = res.c_str();
         }
+        // ImGui::Combo("Select Model",)
         ImGui::End();
 
         ImGui::Begin("ViewPort Controls");
@@ -373,9 +427,67 @@ int main()
         // ImGui::ShowDemoWindow(&show_demo_window);
         ImGui::End();
 
+        // if (ImGui::TreeNode("Combo"))
+        // {
+        //     // Expose flags as checkbox for the demo
+        //     static ImGuiComboFlags flags = 0;
+        //     ImGui::CheckboxFlags("ImGuiComboFlags_PopupAlignLeft", &flags, ImGuiComboFlags_PopupAlignLeft);
+        //     ImGui::SameLine();
+        //     HelpMarker("Only makes a difference if the popup is larger than the combo");
+        //     if (ImGui::CheckboxFlags("ImGuiComboFlags_NoArrowButton", &flags, ImGuiComboFlags_NoArrowButton))
+        //         flags &= ~ImGuiComboFlags_NoPreview; // Clear the other flag, as we cannot combine both
+        //     if (ImGui::CheckboxFlags("ImGuiComboFlags_NoPreview", &flags, ImGuiComboFlags_NoPreview))
+        //         flags &= ~ImGuiComboFlags_NoArrowButton; // Clear the other flag, as we cannot combine both
+
+        //     // Using the generic BeginCombo() API, you have full control over how to display the combo contents.
+        //     // (your selection data could be an index, a pointer to the object, an id for the object, a flag intrusively
+        //     // stored in the object itself, etc.)
+        //     const char *items[] = {"AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF", "GGGG", "HHHH", "IIII", "JJJJ", "KKKK", "LLLLLLL", "MMMM", "OOOOOOO"};
+        //     static int item_current_idx = 0;                           // Here we store our selection data as an index.
+        //     const char *combo_preview_value = items[item_current_idx]; // Pass in the preview value visible before opening the combo (it could be anything)
+        //     if (ImGui::BeginCombo("combo 1", combo_preview_value, flags))
+        //     {
+        //         for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+        //         {
+        //             const bool is_selected = (item_current_idx == n);
+        //             if (ImGui::Selectable(items[n], is_selected))
+        //                 item_current_idx = n;
+
+        //             // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+        //             if (is_selected)
+        //                 ImGui::SetItemDefaultFocus();
+        //         }
+        //         ImGui::EndCombo();
+        //     }
+
+        //     // Simplified one-liner Combo() API, using values packed in a single constant string
+        //     // This is a convenience for when the selection set is small and known at compile-time.
+        //     static int item_current_2 = 0;
+        //     ImGui::Combo("combo 2 (one-liner)", &item_current_2, "aaaa\0bbbb\0cccc\0dddd\0eeee\0\0");
+
+        //     // Simplified one-liner Combo() using an array of const char*
+        //     // This is not very useful (may obsolete): prefer using BeginCombo()/EndCombo() for full control.
+        //     static int item_current_3 = -1; // If the selection isn't within 0..count, Combo won't display a preview
+        //     ImGui::Combo("combo 3 (array)", &item_current_3, items, IM_ARRAYSIZE(items));
+
+        //     // Simplified one-liner Combo() using an accessor function
+        //     struct Funcs
+        //     {
+        //         static bool ItemGetter(void *data, int n, const char **out_str)
+        //         {
+        //             *out_str = ((const char **)data)[n];
+        //             return true;
+        //         }
+        //     };
+        //     static int item_current_4 = 0;
+        //     ImGui::Combo("combo 4 (function)", &item_current_4, &Funcs::ItemGetter, items, IM_ARRAYSIZE(items));
+
+        //     ImGui::TreePop();
+        // }
         imguirender.End();
 
-        glfwSwapBuffers(window);
+        // glfwSwapBuffers(window);
+        context.SwapBuffers();
         glfwPollEvents();
     }
 

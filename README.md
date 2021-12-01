@@ -70,7 +70,7 @@ to clone the necessary submodules.
 
 <h5>Make sure you have python installed on your system</h5>
 
-After cloning the repository run `build.bat` and select yes to install the `googledrivedownloader` package to get the asets from `gdrive`
+After cloning the repository run `build.bat` and select yes to install the `googledrivedownloader` package to get the assets from `gdrive`
 
 To build ORE you need to have [CMAKE](https://cmake.org/download/)
 

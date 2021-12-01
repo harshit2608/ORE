@@ -6,6 +6,10 @@
 #include "core/Log.h"
 #include "core/PlatformDetection.h"
 
+// DEBUG==============================
+
+#include "debug/Timer.h"
+
 // ASSETS=============================
 
 #include "assetmanager/Mesh.h"
