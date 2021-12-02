@@ -55,8 +55,8 @@ namespace ORE
     void Mesh::setupMesh()
     {
         // create buffers/arrays
-        //ORE::Ref<ManagerVertexArray> m_vertexArray = ManagerVertexArray::Create();
-        //ORE::Ref<ManagerVertexBuffer> vertexBuffer = ManagerVertexBuffer::Create(&vertices[0], vertices.size() * sizeof(AssetVertex));
+        // ORE::Ref<ManagerVertexArray> m_vertexArray = ManagerVertexArray::Create();
+        // ORE::Ref<ManagerVertexBuffer> vertexBuffer = ManagerVertexBuffer::Create(&vertices[0], vertices.size() * sizeof(AssetVertex));
 
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);

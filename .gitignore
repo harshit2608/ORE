@@ -48,7 +48,6 @@ task.txt
 FrameBufer.h
 FrameBufer.cpp
 *.zip
-assets-orig/
 downloads/
 assets/
 assets-orig/

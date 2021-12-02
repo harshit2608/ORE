@@ -126,7 +126,7 @@ int main()
     // scaleFactor = helmet.GetScaleFactor();
     // ORE::Model sponza("assets/models/sponza/sponza.obj", 0.008f);
     // scaleFactor = sponza.GetScaleFactor();
-    ORE::Model zorkiCamera("assets/models/zorkicamera/source/RC_zorki_Reduced/ZORKI_LENS.obj", 0.05f);
+    ORE::Model zorkiCamera("assets/models/zorkicamera/source/RC_zorki_Reduced/ZORKI_LENS.obj", 0.08f);
     scaleFactor = zorkiCamera.GetScaleFactor();
 
     // ORE::Model plazaNightTime("assets/models/plaza-night-time/source/plaza01/plaza01_night.FBX", 0.05f);
