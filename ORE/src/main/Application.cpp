@@ -1,4 +1,8 @@
 #define DEBUG_OPENGL 1
+
+#ifdef _MSVC_LANG
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 #include "../ORE.h"
 #include "ApplicationUtils.h"
 
@@ -28,25 +32,25 @@ uint32_t loadCubemap(std::vector<std::string> faces);
 
 bool blinn = false;
 bool blinnKeyPressed = false;
+bool firstMouse = true;
 
 ORE::Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCREEN_WIDTH / 2.0f;
 float lastY = SCREEN_HEIGHT / 2.0f;
-bool firstMouse = true;
 float scaleFactor = 1.0f;
 
-static void HelpMarker(const char *desc)
-{
-    ImGui::TextDisabled("(?)");
-    if (ImGui::IsItemHovered())
-    {
-        ImGui::BeginTooltip();
-        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-        ImGui::TextUnformatted(desc);
-        ImGui::PopTextWrapPos();
-        ImGui::EndTooltip();
-    }
-}
+// static void HelpMarker(const char *desc)
+// {
+//     ImGui::TextDisabled("(?)");
+//     if (ImGui::IsItemHovered())
+//     {
+//         ImGui::BeginTooltip();
+//         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+//         ImGui::TextUnformatted(desc);
+//         ImGui::PopTextWrapPos();
+//         ImGui::EndTooltip();
+//     }
+// }
 
 int main()
 {
@@ -90,20 +94,21 @@ int main()
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_UNAVAILABLE);
 
     glEnable(GL_DEPTH_TEST);
-    // glEnable(GL_CULL_FACE);
+    // glEnable(GL_b_cullFace);
     // glEnable(GL_MULTISAMPLE);
     // glCullFace(GL_BACK);
     glDisable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    // glEnable(GL_STENCIL_TEST);
+    glEnable(GL_STENCIL_TEST);
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-    // glDisable(GL_DITHER);
+    glDisable(GL_DITHER);
 
-    ORE::Shader modelShader("assets/shaders/model.glsl");
+    // ORE::Shader modelShader("assets/shaders/model.glsl");
     ORE::Shader skyboxShader("assets/shaders/skybox.glsl");
-    // ORE::Shader blinphong("assets/shaders/blinphong.glsl");
+    // ORE::Shader modelShader("assets/shaders/blinphong.glsl");
     // ORE::Shader cubemap("assets/shaders/cubemap.glsl");
     ORE::Shader lightCubeShader("assets/shaders/lightcube.glsl");
+    ORE::Shader lightingShader("assets/shaders/lighting.glsl");
 
     ORE::Ref<ORE::ManagerVertexArray> m_SkyBoxvertexArray, m_CubevertexArray, m_LightCubevertexArray;
     ORE::Ref<ORE::ManagerVertexBuffer> m_SkyBoxvertexBuffer, m_CubevertexBuffer, m_LightCubevertexBuffer;
@@ -170,7 +175,7 @@ int main()
 
     // ORE::Ref<ORE::ManagerTexture2D> lightingshaderTexture = ORE::ManagerTexture2D::Create("assets/textures/wood.png");
 
-    // blinphong.Bind();
+    // blinphong.Bind();/
     // blinphong.setInt("texture1", 0);
     // blinphong.setBool("floorTexture", 0);
 #pragma endregion
@@ -190,8 +195,8 @@ int main()
 
     uint32_t cubemapTexture = loadCubemap(faces);
 
-    modelShader.Bind();
-    modelShader.setInt("skybox", 0);
+    // modelShader.Bind();
+    // modelShader.setInt("skybox", 0);
     skyboxShader.Bind();
     skyboxShader.setInt("skybox", 0);
 
@@ -205,12 +210,18 @@ int main()
     ORE::Transformations lights = {
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(1.0f, 1.0f, 1.0f)};
+        glm::vec3(0.5f, 0.5f, 0.5f)};
+
+    // lightingShader.setFloat("light.constant", 1.0f);
+    // lightingShader.setFloat("light.linear", 0.09f);
+    // lightingShader.setFloat("light.quadratic", 0.032f);
+
+    // material properties
 
     glm::vec3 lightPos(0.0f, 3.0f, 0.0f);
     glm::vec4 m_BackgroundColor = {0.1f, 0.1f, 0.1f, 1.0f}, m_LightColor = {1.0f, 1.0f, 1.0f, 1.0f};
-    float lightIntensity = 0.05f;
-    bool load_skybox = 0, light_bloom = 0, polygon_mode = 0, anti_aliasing = 0, cull_face = 0, imguiUITheme = 0;
+    float m_lightIntensity = 0.5f, m_materialShininess = 32.0f, m_lightingDiffuse(0.8f), m_lightingAmbient(0.1f);
+    bool b_load_skybox = 0, b_lightBloom = 0, b_polygonMode = 0, b_antiAliasing = 0, b_cullFace = 0, b_imguiUITheme = 0;
     ;
     static int image_count = 0;
     std::string res = "Image.png";
@@ -220,26 +231,45 @@ int main()
     imguirender.OnAttach();
     bool show_demo_window = true;
 
+    lightingShader.Bind();
+    lightingShader.setInt("material.diffuse", 0);
+    lightingShader.setInt("material.specular", 1);
+    // lightingShader.setFloat("bloomFactor", 1.0f);
+
     while (!glfwWindowShouldClose(window))
     {
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
-        imguirender.Begin();
-        ImGui::Begin("Performance Status");
-        frameCount++;
-        // if (deltaTime >= 1.0)
-        // {
-        ImGui::ShowMetricsWindow();
-        // ImGui::Text("Frame Time %.3f ms/frame (%.1f FPS)", 1000.0f / (double)frameCount, (double)frameCount);
-        // frameCount = 0;
         lastFrame = currentFrame;
-        // }
+
+        imguirender.Begin();
+        ORE::ScenePanel sceneRender;
+        ImGui::Begin("Performance Status");
+        imguirender.performanceLog();
         ImGui::End();
 
         processInput(window);
         glClearColor(m_BackgroundColor.r, m_BackgroundColor.g, m_BackgroundColor.b, m_BackgroundColor.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        modelShader.Bind();
+
+        lightingShader.Bind();
+        lightingShader.setVec3("light.position", lights.position);
+        lightingShader.setVec3("light.direction", lights.scale);
+        lightingShader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
+        lightingShader.setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
+        lightingShader.setVec3("viewPos", camera.Position);
+
+        // light properties
+        lightingShader.setVec3("light.ambient", glm::vec3(m_lightingAmbient));
+        lightingShader.setVec3("light.diffuse", glm::vec3(m_lightingDiffuse));
+        lightingShader.setVec3("light.specular", glm::vec3(1.0f));
+        lightingShader.setVec4("objColor", m_LightColor);
+        lightingShader.setFloat("light.constant", 1.0f);
+        lightingShader.setFloat("light.linear", 0.09f);
+        lightingShader.setFloat("light.quadratic", 0.032f);
+
+        // material properties
+        lightingShader.setFloat("material.shininess", m_materialShininess);
 
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), ASPECT_RATIO, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
@@ -252,9 +282,13 @@ int main()
         model = glm::rotate(model, glm::radians(object.rotation.y), {0.0f, 1.0f, 0.0f});
         model = glm::rotate(model, glm::radians(object.rotation.z), {0.0f, 0.0f, 1.0f});
         model = glm::scale(model, object.scale);
-        modelShader.setMat4("projection", projection);
-        modelShader.setMat4("view", view);
-        modelShader.setMat4("model", model);
+        // modelShader.setMat4("projection", projection);
+        // modelShader.setMat4("view", view);
+        // modelShader.setMat4("model", model);
+
+        lightingShader.setMat4("projection", projection);
+        lightingShader.setMat4("view", view);
+        lightingShader.setMat4("model", model);
 
         // backpack.Draw(modelShader);
         // barrel.Draw(modelShader);
@@ -264,7 +298,7 @@ int main()
         // hanuman.Draw(modelShader);
         // helmet.Draw(modelShader);
         // sponza.Draw(modelShader);
-        zorkiCamera.Draw(modelShader);
+        zorkiCamera.Draw(lightingShader);
 
         // plazaNightTime.Draw(modelShader);
 
@@ -281,7 +315,7 @@ int main()
         // blinphong.setVec3("viewPos", camera.Position);
         // blinphong.setVec3("lightPos", lightPos);
         // blinphong.setInt("blinn", blinn);
-        // blinphong.setFloat("intensity", lightIntensity);
+        // blinphong.setFloat("intensity", m_lightIntensity);
         // lightingvertexArray->Bind();
         // lightingshaderTexture->Bind();
         // glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -311,9 +345,6 @@ int main()
         lightCubeShader.setMat4("projection", projection);
         lightCubeShader.setMat4("view", view);
         glm::mat4 lightCubemodel(1.0f);
-
-#pragma MODEL_RENDER
-        // Transform matrix for mesh
         lightCubemodel = glm::translate(lightCubemodel, lights.position);
         lightCubemodel = glm::rotate(lightCubemodel, glm::radians(lights.rotation.x), {1.0f, 0.0f, 0.0f});
         lightCubemodel = glm::rotate(lightCubemodel, glm::radians(lights.rotation.y), {0.0f, 1.0f, 0.0f});
@@ -336,7 +367,7 @@ int main()
         m_SkyBoxvertexArray->Bind();
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-        if (load_skybox)
+        if (b_load_skybox)
         {
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
@@ -346,12 +377,14 @@ int main()
 #pragma endregion
 
         ImGui::Begin("Menu");
-        ImGui::Checkbox("ImGui Purple UI", &imguiUITheme);
-        ImGui::Checkbox("Load Skybox", &load_skybox);
-        ImGui::Checkbox("WireFrame Mode", &polygon_mode);
-        ImGui::Checkbox("Anti Aliasing", &anti_aliasing);
-        ImGui::Checkbox("CullFace", &cull_face);
-        if (cull_face)
+        ImGui::Checkbox("ImGui Purple UI", &b_imguiUITheme);
+        ImGui::Checkbox("Load Skybox", &b_load_skybox);
+        ImGui::Checkbox("WireFrame Mode", &b_polygonMode);
+        ImGui::Checkbox("Anti Aliasing", &b_antiAliasing);
+        ImGui::Checkbox("CullFace", &b_cullFace);
+        ImGui::ColorEdit4("BackGround Color", glm::value_ptr(m_BackgroundColor));
+
+        if (b_cullFace)
         {
             glEnable(GL_CULL_FACE);
         }
@@ -359,8 +392,8 @@ int main()
         {
             glDisable(GL_CULL_FACE);
         }
-        ImGui::ColorEdit4("BackGround Color", glm::value_ptr(m_BackgroundColor));
-        if (polygon_mode)
+
+        if (b_polygonMode)
         {
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         }
@@ -368,7 +401,8 @@ int main()
         {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         }
-        if (anti_aliasing)
+
+        if (b_antiAliasing)
         {
             glEnable(GL_MULTISAMPLE);
         }
@@ -376,7 +410,8 @@ int main()
         {
             glDisable(GL_MULTISAMPLE);
         }
-        if (imguiUITheme)
+
+        if (b_imguiUITheme)
         {
             imguirender.SetDarkThemeColors();
         }
@@ -384,6 +419,7 @@ int main()
         {
             ImGui::StyleColorsDark();
         }
+
         if (ImGui::Button("Take ScreenShot"))
         {
             imguirender.saveImage(image_outDir);
@@ -392,14 +428,13 @@ int main()
             res += ".png";
             image_outDir = res.c_str();
         }
-        // ImGui::Combo("Select Model",)
         ImGui::End();
 
         ImGui::Begin("ViewPort Controls");
         ImGui::Text("Object Controls");
-        ImGui::DragFloat3("Position##objectPosition", glm::value_ptr(object.position), 0.1f);
-        ImGui::DragFloat3("Rotation##objectRotation", glm::value_ptr(object.rotation), 0.1f);
-        ImGui::DragFloat3("Scale##objectScale", glm::value_ptr(object.scale), 0.1f);
+        sceneRender.DrawVec3Control("Translation", (object.position), 1);
+        sceneRender.DrawVec3Control("Rotation", (object.rotation), 1);
+        sceneRender.DrawVec3Control("Scale", (object.scale), 1);
         if (ImGui::Button("Reset Model transform"))
         {
             object.position = object.rotation = glm::vec3(0.0f);
@@ -408,23 +443,34 @@ int main()
 
         ImGui::Separator();
         ImGui::Text("Light Controls");
-        ImGui::DragFloat3("Position##lightPosition", glm::value_ptr(lights.position), 0.1f);
-        ImGui::DragFloat3("Rotation##lightRotation", glm::value_ptr(lights.rotation), 0.1f);
-        ImGui::DragFloat3("Scale##lightScale", glm::value_ptr(lights.scale), 0.1f);
+        sceneRender.DrawVec3Control("Translation", (lights.position), 2);
+        sceneRender.DrawVec3Control("Rotation", (lights.rotation), 2);
+        sceneRender.DrawVec3Control("Scale", (lights.scale), 2);
         ImGui::ColorEdit4("Light Color", glm::value_ptr(m_LightColor));
-        // ImGui::ColorPicker3("Color##lightColor", light_color);
+        ImGui::DragFloat("Diffuse", &m_lightingDiffuse, 0.05f);
+        ImGui::DragFloat("Ambient", &m_lightingAmbient, 0.01f);
+        // ImGui::DragFloat("Intensity", &m_lightIntensity, 0.05f);
         if (ImGui::Button("Reset Light transform"))
         {
             lights.position = lights.rotation = glm::vec3(0.0f);
-            lights.scale = glm::vec3(1.0f);
+            lights.scale = glm::vec3(0.5f);
+            m_lightingDiffuse = (0.8f);
+            m_lightingAmbient = (0.1f);
         }
-        ImGui::DragFloat("Intensity", &lightIntensity, 0.05f);
-        ImGui::Checkbox("Bloom", &light_bloom);
+
+        // ImGui::Checkbox("Bloom", &b_lightBloom);
+        // if (b_lightBloom)
+        // {
+        //     lightingShader.setFloat("bloomFactor", m_lightIntensity);
+        // }
+        // else
+        // {
+        //     lightingShader.setFloat("bloomFactor", 1.0f);
+        // }
 
         ImGui::Separator();
         ImGui::Text("Camera Controls");
         ImGui::DragFloat("Zoom", &camera.Zoom, 0.1f);
-        // ImGui::ShowDemoWindow(&show_demo_window);
         ImGui::End();
 
         // if (ImGui::TreeNode("Combo"))
@@ -486,13 +532,12 @@ int main()
         // }
         imguirender.End();
 
-        // glfwSwapBuffers(window);
         context.SwapBuffers();
         glfwPollEvents();
     }
 
     imguirender.OnDetach();
-    modelShader.UnBind();
+    // modelShader.UnBind();
     lightCubeShader.UnBind();
     // blinphong.UnBind();
     ORE::skyBoxDetach(m_SkyBoxvertexArray, m_SkyBoxvertexBuffer);
@@ -544,7 +589,6 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 
 void mouse_callback(GLFWwindow *window, double xpos, double ypos)
 {
-
     if (firstMouse)
     {
         lastX = xpos;
@@ -593,6 +637,7 @@ uint32_t loadCubemap(std::vector<std::string> faces)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    stbi_set_flip_vertically_on_load(true);
 
     return textureID;
 }

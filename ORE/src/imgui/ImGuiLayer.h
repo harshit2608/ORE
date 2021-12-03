@@ -20,8 +20,8 @@ namespace ORE
         void Begin();
         void End();
 
+        void performanceLog();
         void saveImage(const char *filepath);
-
         void SetDarkThemeColors();
 
     private:

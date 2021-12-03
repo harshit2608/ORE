@@ -199,7 +199,7 @@ namespace ORE
         binPath = binPath.substr(0, binPath.find_last_of('.')) + ".bin";
         ImageData imageData = {};
 
-        CheckForCache(filename.c_str(), binPath.c_str(), imageData);
+        // CheckForCache(filename.c_str(), binPath.c_str(), imageData);
 
         // Texture *m_texture = new Texture(filename);
         // m_texture = ManagerTexture2D::Create(filename);
@@ -209,7 +209,7 @@ namespace ORE
         glGenTextures(1, &textureID);
 
         // int width, height, channels;
-        // imageData.data = stbi_load(filename.c_str(), &imageData.width, &imageData.height, &imageData.channels, 0);
+        imageData.data = stbi_load(filename.c_str(), &imageData.width, &imageData.height, &imageData.channels, 0);
         if (imageData.data)
         {
             GLenum format, internalFormat;

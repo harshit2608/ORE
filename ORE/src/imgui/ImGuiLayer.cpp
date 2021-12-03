@@ -78,6 +78,13 @@ namespace ORE
         }
     }
 
+    void ImGuiLayer::performanceLog()
+    {
+        ImGuiIO &io = ImGui::GetIO();
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+        ImGui::Text("%d vertices, %d indices (%d triangles)", io.MetricsRenderVertices, io.MetricsRenderIndices, io.MetricsRenderIndices / 3);
+    }
+
     void ImGuiLayer::SetDarkThemeColors()
     {
         auto &style = ImGui::GetStyle();

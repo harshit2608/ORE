@@ -18,6 +18,7 @@
 // IMGUI==============================
 
 #include "imgui/ImGuiLayer.h"
+#include "imgui/panels/Scenepanel.h"
 
 // MAIN===============================
 
