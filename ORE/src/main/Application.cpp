@@ -137,8 +137,6 @@ int main()
     // ORE::Model plazaNightTime("assets/models/plaza-night-time/source/plaza01/plaza01_night.FBX", 0.05f);
     // scaleFactor = plazaNightTime.GetScaleFactor();
 
-    // ORE::Model mirrorEdgeAppartment("assets/models/mirrors_edge_apartment/scene.gltf", 0.008f);
-    // scaleFactor = mirrorEdgeAppartment.GetScaleFactor();
     // ORE::Model scifi_corridor("assets/models/scifi_corridor/source/hallway/hallway.FBX", 0.05f);
     // scaleFactor = scifi_corridor.GetScaleFactor();
     // ORE::Model american_muscle_71("assets/models/american_muscle_71/source/Phoenix445.fbx", 0.05f);
@@ -212,17 +210,10 @@ int main()
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(0.5f, 0.5f, 0.5f)};
 
-    // lightingShader.setFloat("light.constant", 1.0f);
-    // lightingShader.setFloat("light.linear", 0.09f);
-    // lightingShader.setFloat("light.quadratic", 0.032f);
-
-    // material properties
-
     glm::vec3 lightPos(0.0f, 3.0f, 0.0f);
     glm::vec4 m_BackgroundColor = {0.1f, 0.1f, 0.1f, 1.0f}, m_LightColor = {1.0f, 1.0f, 1.0f, 1.0f};
     float m_lightIntensity = 0.5f, m_materialShininess = 32.0f, m_lightingDiffuse(0.8f), m_lightingAmbient(0.1f);
-    bool b_load_skybox = 0, b_lightBloom = 0, b_polygonMode = 0, b_antiAliasing = 0, b_cullFace = 0, b_imguiUITheme = 0;
-    ;
+    bool b_load_skybox = 0, b_lightBloom = 0, b_polygonMode = 0, b_antiAliasing = 0, b_cullFace = 0, b_imguiUITheme = 0, b_skyBoxLighting = 0;
     static int image_count = 0;
     std::string res = "Image.png";
     const char *image_outDir = res.c_str();
@@ -234,6 +225,9 @@ int main()
     lightingShader.Bind();
     lightingShader.setInt("material.diffuse", 0);
     lightingShader.setInt("material.specular", 1);
+    lightingShader.setFloat("light.constant", 1.0f);
+    lightingShader.setFloat("light.linear", 0.09f);
+    lightingShader.setFloat("light.quadratic", 0.032f);
     // lightingShader.setFloat("bloomFactor", 1.0f);
 
     while (!glfwWindowShouldClose(window))
@@ -264,9 +258,9 @@ int main()
         lightingShader.setVec3("light.diffuse", glm::vec3(m_lightingDiffuse));
         lightingShader.setVec3("light.specular", glm::vec3(1.0f));
         lightingShader.setVec4("objColor", m_LightColor);
-        lightingShader.setFloat("light.constant", 1.0f);
-        lightingShader.setFloat("light.linear", 0.09f);
-        lightingShader.setFloat("light.quadratic", 0.032f);
+        // lightingShader.setFloat("light.constant", 1.0f);
+        // lightingShader.setFloat("light.linear", 0.09f);
+        // lightingShader.setFloat("light.quadratic", 0.032f);
 
         // material properties
         lightingShader.setFloat("material.shininess", m_materialShininess);
@@ -387,6 +381,7 @@ int main()
         if (b_cullFace)
         {
             glEnable(GL_CULL_FACE);
+            // glCullFace(GL_BACK);
         }
         else
         {
@@ -458,6 +453,19 @@ int main()
             m_lightingAmbient = (0.1f);
         }
 
+        if (b_load_skybox)
+        {
+            ImGui::Checkbox("SkyBox Lighting", &b_skyBoxLighting);
+            if (b_skyBoxLighting)
+            {
+                lightingShader.setInt("skybox", 0);
+            }
+            else
+            {
+                // lightingShader.UnBind();
+                // lightingShader.Bind();
+            }
+        }
         // ImGui::Checkbox("Bloom", &b_lightBloom);
         // if (b_lightBloom)
         // {

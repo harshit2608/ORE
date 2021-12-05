@@ -29,6 +29,7 @@
 #include "renderer/Camera.h"
 #include "renderer/Shader.h"
 #include "renderer/Buffer.h"
+#include "renderer/FrameBuffer.h"
 #include "renderer/VertexArray.h"
 #include "renderer/GraphicManager.h"
 #include "renderer/Texture.h"

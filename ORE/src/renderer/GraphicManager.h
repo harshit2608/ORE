@@ -208,14 +208,8 @@ namespace ORE
     enum class ManagerFrameBufferTextureFormat
     {
         None = 0,
-
-        // Color
         RGBA8,
-
-        // Depth/stencil
         DEPTH24STENCIL8,
-
-        // Defaults
         Depth = DEPTH24STENCIL8
     };
 
@@ -263,4 +257,5 @@ namespace ORE
 
         static Ref<ManagerFrameBuffer> Create(const FrameBufferSpecification &spec);
     };
+    
 } // namespace ORE
