@@ -16,7 +16,7 @@
 
 ORE(OpenGL Rendering Engine) is a rendering engine with great and easy to use UI that allows the user to load and view their 3D models in realtime.
 
-PS: I am developing this project for my college minor assessment
+*PS: I am developing this project for my college minor assessment*
 
 <!-- [MODEL CREDITS](resources/LICENSE "Model License") -->
 
@@ -28,7 +28,7 @@ Some of the images are taken using ORE inbuilt screenshot system.
 
 ![Gun](resources/Gun_with_UI.png "Gun with UI")
 
-<div style="padding:52.71% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/653409636?h=a88356e879&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="ORE - 2021.12.05"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
+[![ORE Preview](resources/ORE.png)](https://vimeo.com/653409636 "ORE preview video")
 
 ## ORE Controls and Features
 
@@ -110,7 +110,3 @@ cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ..
 <h4>Building ORE on Linux</h4>
 
 **PROJECT IS UNDERDEVELOPMENT AND HASN'T BEEN TESTED ON LINUX!!**
-
-```
-
-```
