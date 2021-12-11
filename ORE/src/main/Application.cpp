@@ -39,19 +39,6 @@ float lastX = SCREEN_WIDTH / 2.0f;
 float lastY = SCREEN_HEIGHT / 2.0f;
 float scaleFactor = 1.0f;
 
-// static void HelpMarker(const char *desc)
-// {
-//     ImGui::TextDisabled("(?)");
-//     if (ImGui::IsItemHovered())
-//     {
-//         ImGui::BeginTooltip();
-//         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-//         ImGui::TextUnformatted(desc);
-//         ImGui::PopTextWrapPos();
-//         ImGui::EndTooltip();
-//     }
-// }
-
 int main()
 {
     ORE::Log::Init();
@@ -230,6 +217,8 @@ int main()
     lightingShader.setFloat("light.quadratic", 0.032f);
     // lightingShader.setFloat("bloomFactor", 1.0f);
 
+    ORE::Ref<ORE::ModelManager> m_Model;
+
     while (!glfwWindowShouldClose(window))
     {
         float currentFrame = glfwGetTime();
@@ -283,6 +272,10 @@ int main()
         lightingShader.setMat4("projection", projection);
         lightingShader.setMat4("view", view);
         lightingShader.setMat4("model", model);
+
+        // sceneRender.drawGui();
+        // m_Model->Create(sceneRender.GetFilePath(), 0.008f);
+        // m_Model->Draw(lightingShader);
 
         // backpack.Draw(modelShader);
         // barrel.Draw(modelShader);
@@ -481,63 +474,6 @@ int main()
         ImGui::DragFloat("Zoom", &camera.Zoom, 0.1f);
         ImGui::End();
 
-        // if (ImGui::TreeNode("Combo"))
-        // {
-        //     // Expose flags as checkbox for the demo
-        //     static ImGuiComboFlags flags = 0;
-        //     ImGui::CheckboxFlags("ImGuiComboFlags_PopupAlignLeft", &flags, ImGuiComboFlags_PopupAlignLeft);
-        //     ImGui::SameLine();
-        //     HelpMarker("Only makes a difference if the popup is larger than the combo");
-        //     if (ImGui::CheckboxFlags("ImGuiComboFlags_NoArrowButton", &flags, ImGuiComboFlags_NoArrowButton))
-        //         flags &= ~ImGuiComboFlags_NoPreview; // Clear the other flag, as we cannot combine both
-        //     if (ImGui::CheckboxFlags("ImGuiComboFlags_NoPreview", &flags, ImGuiComboFlags_NoPreview))
-        //         flags &= ~ImGuiComboFlags_NoArrowButton; // Clear the other flag, as we cannot combine both
-
-        //     // Using the generic BeginCombo() API, you have full control over how to display the combo contents.
-        //     // (your selection data could be an index, a pointer to the object, an id for the object, a flag intrusively
-        //     // stored in the object itself, etc.)
-        //     const char *items[] = {"AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF", "GGGG", "HHHH", "IIII", "JJJJ", "KKKK", "LLLLLLL", "MMMM", "OOOOOOO"};
-        //     static int item_current_idx = 0;                           // Here we store our selection data as an index.
-        //     const char *combo_preview_value = items[item_current_idx]; // Pass in the preview value visible before opening the combo (it could be anything)
-        //     if (ImGui::BeginCombo("combo 1", combo_preview_value, flags))
-        //     {
-        //         for (int n = 0; n < IM_ARRAYSIZE(items); n++)
-        //         {
-        //             const bool is_selected = (item_current_idx == n);
-        //             if (ImGui::Selectable(items[n], is_selected))
-        //                 item_current_idx = n;
-
-        //             // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-        //             if (is_selected)
-        //                 ImGui::SetItemDefaultFocus();
-        //         }
-        //         ImGui::EndCombo();
-        //     }
-
-        //     // Simplified one-liner Combo() API, using values packed in a single constant string
-        //     // This is a convenience for when the selection set is small and known at compile-time.
-        //     static int item_current_2 = 0;
-        //     ImGui::Combo("combo 2 (one-liner)", &item_current_2, "aaaa\0bbbb\0cccc\0dddd\0eeee\0\0");
-
-        //     // Simplified one-liner Combo() using an array of const char*
-        //     // This is not very useful (may obsolete): prefer using BeginCombo()/EndCombo() for full control.
-        //     static int item_current_3 = -1; // If the selection isn't within 0..count, Combo won't display a preview
-        //     ImGui::Combo("combo 3 (array)", &item_current_3, items, IM_ARRAYSIZE(items));
-
-        //     // Simplified one-liner Combo() using an accessor function
-        //     struct Funcs
-        //     {
-        //         static bool ItemGetter(void *data, int n, const char **out_str)
-        //         {
-        //             *out_str = ((const char **)data)[n];
-        //             return true;
-        //         }
-        //     };
-        //     static int item_current_4 = 0;
-        //     ImGui::Combo("combo 4 (function)", &item_current_4, &Funcs::ItemGetter, items, IM_ARRAYSIZE(items));
-
-        //     ImGui::TreePop();
-        // }
         imguirender.End();
 
         context.SwapBuffers();

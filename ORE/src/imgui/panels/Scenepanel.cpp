@@ -93,4 +93,30 @@ namespace ORE
         ImGui::PopID();
     }
 
+    void ScenePanel::drawGui()
+    {
+        // open Dialog Simple
+        if (ImGui::Button("Open File Dialog"))
+            ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".obj,.fbx", ".");
+
+        // display
+        if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"))
+        {
+            // action if OK
+            if (ImGuiFileDialog::Instance()->IsOk())
+            {
+                std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+                std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+                ORE_CORE_WARN(filePathName);
+                ORE_CORE_WARN(filePath);
+                m_FilePath = filePathName;
+
+                // action
+            }
+
+            // close
+            ImGuiFileDialog::Instance()->Close();
+        }
+    }
+
 } // ORE

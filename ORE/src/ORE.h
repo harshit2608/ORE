@@ -12,6 +12,7 @@
 
 // ASSETS=============================
 
+#include "assetmanager/AssetManager.h"
 #include "assetmanager/Mesh.h"
 #include "assetmanager/Model.h"
 

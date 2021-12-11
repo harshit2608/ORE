@@ -4,6 +4,7 @@
 #include "../core/Log.h"
 #include "../renderer/Shader.h"
 #include "../renderer/GraphicManager.h"
+#include "AssetManager.h"
 
 #include "Mesh.h"
 
@@ -24,11 +25,11 @@ namespace ORE
         int width, height, channels;
     };
 
-    class Model
+    class Model : public ModelManager
     {
     public:
         Model(const std::string &path, float scaleFactor, bool gamma = false);
-        void Draw(Shader &shader);
+        virtual void Draw(Shader &shader) override;
         float GetScaleFactor() const { return m_ScaleFactor; }
 
     private:

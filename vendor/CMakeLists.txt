@@ -119,3 +119,20 @@ set(ASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT OFF)
 message("=== BUILDING ${ASSIMP_LIB_NAME} ===")
 set(ASSIMP_INC_PATH ${ASSIMP_LIB_NAME}/include)
 add_subdirectory(${ASSIMP_LIB_NAME})
+
+# IMGUIFILEDIALOG=============================================================================
+set(IMGUI_FILE_DIALOG_LIB_NAME "ImGuiFileDialog")
+message("=== BUILDING ${IMGUI_FILE_DIALOG_LIB_NAME} ===")
+set(IMGUI_FILE_DIALOG_INC_PATH ${IMGUI_FILE_DIALOG_LIB_NAME})
+add_library( ${IMGUI_FILE_DIALOG_LIB_NAME}
+    STATIC
+        "${IMGUI_FILE_DIALOG_INC_PATH}/ImGuiFileDialog.cpp"
+)
+
+target_include_directories(${IMGUI_FILE_DIALOG_INC_PATH}
+    PUBLIC
+        "${GLFW_INC_PATH}"
+        "${GLAD_INC_PATH}"
+        "${IMGUI_INC_PATH}"
+        "${IMGUI_FILE_DIALOG_INC_PATH}"
+)
