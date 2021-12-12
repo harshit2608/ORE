@@ -16,7 +16,7 @@
 
 ORE(OpenGL Rendering Engine) is a rendering engine with great and easy to use UI that allows the user to load and view their 3D models in realtime.
 
-*PS: I am developing this project for my college minor assessment*
+_PS: I am developing this project for my college minor assessment_
 
 <!-- [MODEL CREDITS](resources/LICENSE "Model License") -->
 
@@ -58,15 +58,15 @@ Some of the images are taken using ORE inbuilt screenshot system.
 | Transformation System     | :heavy_check_mark: |
 | Performance Viewer        | :heavy_check_mark: |
 | Spot Light                | :heavy_check_mark: |
+| Spot Light                | :heavy_check_mark: |
+| Model Loading UI          | :heavy_check_mark: |
 
 ## Getting Started
 
 Start by cloning the repository with
 
 ```
-
 git clone --recursive https://github.com/harshit2608/ORE.git
-
 ```
 
 If the repository was cloned non-recursively previously, use
@@ -89,10 +89,8 @@ Download MSVC from [here](https://visualstudio.microsoft.com/vs/features/cpluspl
 Open command prompt in root directory and type the following commands:
 
 ```
-
 mkdir build && cd build
 cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Release ..
-
 ```
 
 **MINGW**
@@ -101,10 +99,8 @@ Download MinGW from [here](https://www.mingw-w64.org)
 Open command prompt in root directory and type the following commands:
 
 ```
-
 mkdir build && cd build
 cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ..
-
 ```
 
 <h4>Building ORE on Linux</h4>

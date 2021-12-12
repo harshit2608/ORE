@@ -22,17 +22,15 @@ std::string TITLE = "ORE";
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-int frameCount = 0;
+bool blinn = false;
+bool blinnKeyPressed = false;
+bool firstMouse = true;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 uint32_t loadCubemap(std::vector<std::string> faces);
-
-bool blinn = false;
-bool blinnKeyPressed = false;
-bool firstMouse = true;
 
 ORE::Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCREEN_WIDTH / 2.0f;
@@ -90,12 +88,12 @@ int main()
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     glDisable(GL_DITHER);
 
-    // ORE::Shader modelShader("assets/shaders/model.glsl");
+    ORE::Shader modelShader("assets\\shaders\\model.glsl");
     ORE::Shader skyboxShader("assets/shaders/skybox.glsl");
     // ORE::Shader modelShader("assets/shaders/blinphong.glsl");
     // ORE::Shader cubemap("assets/shaders/cubemap.glsl");
-    ORE::Shader lightCubeShader("assets/shaders/lightcube.glsl");
-    ORE::Shader lightingShader("assets/shaders/lighting.glsl");
+    ORE::Shader lightCubeShader("assets\\shaders\\lightcube.glsl");
+    ORE::Shader lightingShader("assets\\shaders\\lighting.glsl");
 
     ORE::Ref<ORE::ManagerVertexArray> m_SkyBoxvertexArray, m_CubevertexArray, m_LightCubevertexArray;
     ORE::Ref<ORE::ManagerVertexBuffer> m_SkyBoxvertexBuffer, m_CubevertexBuffer, m_LightCubevertexBuffer;
@@ -118,8 +116,11 @@ int main()
     // scaleFactor = helmet.GetScaleFactor();
     // ORE::Model sponza("assets/models/sponza/sponza.obj", 0.008f);
     // scaleFactor = sponza.GetScaleFactor();
-    ORE::Model zorkiCamera("assets/models/zorkicamera/source/RC_zorki_Reduced/ZORKI_LENS.obj", 0.08f);
-    scaleFactor = zorkiCamera.GetScaleFactor();
+    // ORE::Model zorkiCamera("assets/models/zorkicamera/source/RC_zorki_Reduced/ZORKI_LENS.obj", 0.08f);
+    // scaleFactor = zorkiCamera.GetScaleFactor();
+
+    ORE::Model m_Models("assets\\models\\gun\\Cerberus_LP.FBX", 0.08f);
+    scaleFactor = m_Models.GetScaleFactor();
 
     // ORE::Model plazaNightTime("assets/models/plaza-night-time/source/plaza01/plaza01_night.FBX", 0.05f);
     // scaleFactor = plazaNightTime.GetScaleFactor();
@@ -180,8 +181,6 @@ int main()
 
     uint32_t cubemapTexture = loadCubemap(faces);
 
-    // modelShader.Bind();
-    // modelShader.setInt("skybox", 0);
     skyboxShader.Bind();
     skyboxShader.setInt("skybox", 0);
 
@@ -215,9 +214,7 @@ int main()
     lightingShader.setFloat("light.constant", 1.0f);
     lightingShader.setFloat("light.linear", 0.09f);
     lightingShader.setFloat("light.quadratic", 0.032f);
-    // lightingShader.setFloat("bloomFactor", 1.0f);
-
-    ORE::Ref<ORE::ModelManager> m_Model;
+    lightingShader.setFloat("bloomFactor", 1.0f);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -227,6 +224,7 @@ int main()
 
         imguirender.Begin();
         ORE::ScenePanel sceneRender;
+
         ImGui::Begin("Performance Status");
         imguirender.performanceLog();
         ImGui::End();
@@ -235,24 +233,31 @@ int main()
         glClearColor(m_BackgroundColor.r, m_BackgroundColor.g, m_BackgroundColor.b, m_BackgroundColor.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        lightingShader.Bind();
-        lightingShader.setVec3("light.position", lights.position);
-        lightingShader.setVec3("light.direction", lights.scale);
-        lightingShader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
-        lightingShader.setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
-        lightingShader.setVec3("viewPos", camera.Position);
+        if (!b_skyBoxLighting)
+        {
+            modelShader.UnBind();
+            lightingShader.Bind();
+            lightingShader.setInt("material.diffuse", 0);
+            lightingShader.setInt("material.specular", 1);
+            lightingShader.setFloat("light.constant", 1.0f);
+            lightingShader.setFloat("light.linear", 0.09f);
+            lightingShader.setFloat("light.quadratic", 0.032f);
+            lightingShader.setFloat("bloomFactor", 1.0f);
+            lightingShader.setVec3("light.position", lights.position);
+            lightingShader.setVec3("light.direction", lights.scale);
+            lightingShader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
+            lightingShader.setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
+            lightingShader.setVec3("viewPos", camera.Position);
 
-        // light properties
-        lightingShader.setVec3("light.ambient", glm::vec3(m_lightingAmbient));
-        lightingShader.setVec3("light.diffuse", glm::vec3(m_lightingDiffuse));
-        lightingShader.setVec3("light.specular", glm::vec3(1.0f));
-        lightingShader.setVec4("objColor", m_LightColor);
-        // lightingShader.setFloat("light.constant", 1.0f);
-        // lightingShader.setFloat("light.linear", 0.09f);
-        // lightingShader.setFloat("light.quadratic", 0.032f);
+            // light properties
+            lightingShader.setVec3("light.ambient", glm::vec3(m_lightingAmbient));
+            lightingShader.setVec3("light.diffuse", glm::vec3(m_lightingDiffuse));
+            lightingShader.setVec3("light.specular", glm::vec3(1.0f));
+            lightingShader.setVec4("objColor", m_LightColor);
 
-        // material properties
-        lightingShader.setFloat("material.shininess", m_materialShininess);
+            // material properties
+            lightingShader.setFloat("material.shininess", m_materialShininess);
+        }
 
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), ASPECT_RATIO, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
@@ -265,15 +270,25 @@ int main()
         model = glm::rotate(model, glm::radians(object.rotation.y), {0.0f, 1.0f, 0.0f});
         model = glm::rotate(model, glm::radians(object.rotation.z), {0.0f, 0.0f, 1.0f});
         model = glm::scale(model, object.scale);
-        // modelShader.setMat4("projection", projection);
-        // modelShader.setMat4("view", view);
-        // modelShader.setMat4("model", model);
 
-        lightingShader.setMat4("projection", projection);
-        lightingShader.setMat4("view", view);
-        lightingShader.setMat4("model", model);
+        if (b_skyBoxLighting)
+        {
+            lightingShader.UnBind();
+            modelShader.Bind();
+            modelShader.setInt("skybox", 0);
+            modelShader.setMat4("projection", projection);
+            modelShader.setMat4("view", view);
+            modelShader.setMat4("model", model);
+            m_Models.Draw(modelShader);
+        }
+        else
+        {
+            lightingShader.setMat4("projection", projection);
+            lightingShader.setMat4("view", view);
+            lightingShader.setMat4("model", model);
 
-        // sceneRender.drawGui();
+            m_Models.Draw(lightingShader);
+        }
         // m_Model->Create(sceneRender.GetFilePath(), 0.008f);
         // m_Model->Draw(lightingShader);
 
@@ -285,7 +300,7 @@ int main()
         // hanuman.Draw(modelShader);
         // helmet.Draw(modelShader);
         // sponza.Draw(modelShader);
-        zorkiCamera.Draw(lightingShader);
+        // zorkiCamera.Draw(lightingShader);
 
         // plazaNightTime.Draw(modelShader);
 
@@ -364,6 +379,28 @@ int main()
 #pragma endregion
 
         ImGui::Begin("Menu");
+
+        if (ImGui::Button("Open Model"))
+        {
+            ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".obj,.fbx,.FBX,.gltf", ".");
+        }
+
+        if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"))
+        {
+            std::string m_FilePath;
+            if (ImGuiFileDialog::Instance()->IsOk())
+            {
+                std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+                std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+                ORE_CORE_INFO(filePathName);
+                ORE_CORE_INFO(filePath);
+                m_FilePath = filePathName;
+            }
+            ImGuiFileDialog::Instance()->Close();
+            m_Models = ORE::Model(m_FilePath, 0.008f);
+            scaleFactor = m_Models.GetScaleFactor();
+        }
+
         ImGui::Checkbox("ImGui Purple UI", &b_imguiUITheme);
         ImGui::Checkbox("Load Skybox", &b_load_skybox);
         ImGui::Checkbox("WireFrame Mode", &b_polygonMode);
@@ -449,15 +486,6 @@ int main()
         if (b_load_skybox)
         {
             ImGui::Checkbox("SkyBox Lighting", &b_skyBoxLighting);
-            if (b_skyBoxLighting)
-            {
-                lightingShader.setInt("skybox", 0);
-            }
-            else
-            {
-                // lightingShader.UnBind();
-                // lightingShader.Bind();
-            }
         }
         // ImGui::Checkbox("Bloom", &b_lightBloom);
         // if (b_lightBloom)

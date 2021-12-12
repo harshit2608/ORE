@@ -96,7 +96,6 @@ namespace ORE
     void ScenePanel::drawGui()
     {
         // open Dialog Simple
-        if (ImGui::Button("Open File Dialog"))
             ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".obj,.fbx", ".");
 
         // display
@@ -107,16 +106,13 @@ namespace ORE
             {
                 std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
                 std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
-                ORE_CORE_WARN(filePathName);
-                ORE_CORE_WARN(filePath);
+                ORE_CORE_INFO(filePathName);
+                ORE_CORE_INFO(filePath);
                 m_FilePath = filePathName;
-
-                // action
             }
 
             // close
             ImGuiFileDialog::Instance()->Close();
         }
     }
-
 } // ORE

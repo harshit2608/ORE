@@ -20,13 +20,14 @@ namespace ORE
     void Model::loadModel(std::string const &path)
     {
         Assimp::Importer importer;
-        const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+        const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
             ORE_CORE_ERROR("Assimp Error: {0} ", importer.GetErrorString());
             return;
         }
-        directory = path.substr(0, path.find_last_of('/'));
+        // directory = path.substr(0, path.find_last_of('/'));
+        directory = path.substr(0, path.find_last_of('\\'));
         processNode(scene->mRootNode, scene);
     }
 
@@ -193,7 +194,7 @@ namespace ORE
     uint32_t Model::TextureFromFile(const char *path, const std::string &directory, bool gamma)
     {
         std::string filename = std::string(path);
-        filename = directory + '/' + filename;
+        filename = directory + '\\' + filename;
 
         std::string binPath(filename);
         binPath = binPath.substr(0, binPath.find_last_of('.')) + ".bin";
