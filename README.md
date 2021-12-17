@@ -65,6 +65,14 @@ Some of the images are taken using ORE inbuilt screenshot system.
 
 Start by cloning the repository with
 
+_For Users:_
+
+```
+git clone --recursive --depth=1 https://github.com/harshit2608/ORE.git
+```
+
+_For Developers:_
+
 ```
 git clone --recursive https://github.com/harshit2608/ORE.git
 ```
