@@ -89,7 +89,7 @@ int main()
     glDisable(GL_DITHER);
 
     ORE::Shader modelShader("assets\\shaders\\model.glsl");
-    ORE::Shader skyboxShader("assets/shaders/skybox.glsl");
+    ORE::Shader skyboxShader("assets\\shaders\\skybox.glsl");
     // ORE::Shader modelShader("assets/shaders/blinphong.glsl");
     // ORE::Shader cubemap("assets/shaders/cubemap.glsl");
     ORE::Shader lightCubeShader("assets\\shaders\\lightcube.glsl");
@@ -122,19 +122,7 @@ int main()
     ORE::Model m_Models("assets\\models\\gun\\Cerberus_LP.FBX", 0.08f);
     scaleFactor = m_Models.GetScaleFactor();
 
-    // ORE::Model plazaNightTime("assets/models/plaza-night-time/source/plaza01/plaza01_night.FBX", 0.05f);
-    // scaleFactor = plazaNightTime.GetScaleFactor();
-
-    // ORE::Model scifi_corridor("assets/models/scifi_corridor/source/hallway/hallway.FBX", 0.05f);
-    // scaleFactor = scifi_corridor.GetScaleFactor();
-    // ORE::Model american_muscle_71("assets/models/american_muscle_71/source/Phoenix445.fbx", 0.05f);
-    // scaleFactor = american_muscle_71.GetScaleFactor();
-    // ORE::Model datsun1972("assets/models/1972_datsun_gt/source/datsun240k.fbx", 0.05f);
-    // scaleFactor = datsun1972.GetScaleFactor();
-    // ORE::Model porsche911_1975("assets/models/1975_porsche_911_930_turbo/scene.gltf", 0.05f);
-    // scaleFactor = porsche911_1975.GetScaleFactor();
     tm.PrintTime();
-    // vector<std::string> modelName;
 
 #pragma endregion
 
@@ -168,7 +156,6 @@ int main()
 
 #pragma SKYBOX_SETUP
     ORE::skyBoxAttach(m_SkyBoxvertexArray, m_SkyBoxvertexBuffer);
-    // ORE::cubeAttach(m_CubevertexArray, m_CubevertexBuffer);
     ORE::lightCubeAttach(m_LightCubevertexArray, m_LightCubevertexBuffer);
 
     std::vector<std::string> faces{
@@ -289,8 +276,6 @@ int main()
 
             m_Models.Draw(lightingShader);
         }
-        // m_Model->Create(sceneRender.GetFilePath(), 0.008f);
-        // m_Model->Draw(lightingShader);
 
         // backpack.Draw(modelShader);
         // barrel.Draw(modelShader);
@@ -301,15 +286,6 @@ int main()
         // helmet.Draw(modelShader);
         // sponza.Draw(modelShader);
         // zorkiCamera.Draw(lightingShader);
-
-        // plazaNightTime.Draw(modelShader);
-
-        // mirrorEdgeAppartment.Draw(modelShader);
-        // scifi_corridor.Draw(modelShader);
-        // american_muscle_71.Draw(modelShader);
-        // porsche911_1975.Draw(modelShader);
-        // datsun1972.Draw(modelShader);
-        // tm.PrintTime();
 #pragma endregion
 
         // blinphong.setMat4("projection", projection);
@@ -397,8 +373,10 @@ int main()
                 m_FilePath = filePathName;
             }
             ImGuiFileDialog::Instance()->Close();
+            tm.Reset();
             m_Models = ORE::Model(m_FilePath, 0.008f);
             scaleFactor = m_Models.GetScaleFactor();
+            tm.PrintTime();
         }
 
         ImGui::Checkbox("ImGui Purple UI", &b_imguiUITheme);

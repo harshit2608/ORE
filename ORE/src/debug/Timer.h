@@ -21,12 +21,12 @@ namespace ORE
             ORE_CORE_INFO("{0} took {1} seconds and {2} ms", m_Name, Elapsed(), ElapsedMillis());
         }
 
-    private:
         void Reset()
         {
             m_Start = std::chrono::high_resolution_clock::now();
         }
 
+    private:
         float Elapsed()
         {
             return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - m_Start).count() * 0.001f * 0.001f * 0.001f;

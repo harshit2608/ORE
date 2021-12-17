@@ -12,14 +12,18 @@ start_time = datetime.now()
 zip_download_location = 'downloads/assets.zip'
 temp = 'downloads/'
 
-# https://drive.google.com/file/d/1wUFCq1_UBkaw59TXhqiiALXoSghsQ-X6/view?usp=sharing
+# Orig->Assets id-> https://drive.google.com/file/d/1wUFCq1_UBkaw59TXhqiiALXoSghsQ-X6/view?usp=sharing
+# 1wUFCq1_UBkaw59TXhqiiALXoSghsQ-X6
 
-gdd.download_file_from_google_drive(file_id='1wUFCq1_UBkaw59TXhqiiALXoSghsQ-X6' , dest_path=zip_download_location, unzip=False,showsize=True,overwrite=True)
+#Current->Assets id->https://drive.google.com/file/d/1SHXu5pAG84OtpNLCl-cn0iuoRCcdLjWs/view?usp=sharing
+#1SHXu5pAG84OtpNLCl-cn0iuoRCcdLjWs
+
+gdd.download_file_from_google_drive(file_id='1SHXu5pAG84OtpNLCl-cn0iuoRCcdLjWs' , dest_path=zip_download_location, unzip=False,showsize=True,overwrite=True)
 file_name = zip_download_location
 
 with ZipFile(file_name, 'r') as zip:
     zip.printdir()
-  
+
     print('Extracting all the files now...')
     zip.extractall("ORE")
     print('Done!')
