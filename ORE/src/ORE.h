@@ -23,8 +23,6 @@
 
 // MAIN===============================
 
-#include "main/EntryPoint.h"
-
 // RENDERER===========================
 
 #include "renderer/Camera.h"

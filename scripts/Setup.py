@@ -15,10 +15,10 @@ temp = 'downloads/'
 # Orig->Assets id-> https://drive.google.com/file/d/1wUFCq1_UBkaw59TXhqiiALXoSghsQ-X6/view?usp=sharing
 # 1wUFCq1_UBkaw59TXhqiiALXoSghsQ-X6
 
-#Current->Assets id->https://drive.google.com/file/d/1SHXu5pAG84OtpNLCl-cn0iuoRCcdLjWs/view?usp=sharing
-#1SHXu5pAG84OtpNLCl-cn0iuoRCcdLjWs
+#Current->Assets id->https://drive.google.com/file/d/1c4g6O7WXCQKB74qAg_WZyCZYYbo9cg1v/view?usp=sharing
+#1c4g6O7WXCQKB74qAg_WZyCZYYbo9cg1v
 
-gdd.download_file_from_google_drive(file_id='1SHXu5pAG84OtpNLCl-cn0iuoRCcdLjWs' , dest_path=zip_download_location, unzip=False,showsize=True,overwrite=True)
+gdd.download_file_from_google_drive(file_id='1c4g6O7WXCQKB74qAg_WZyCZYYbo9cg1v' , dest_path=zip_download_location, unzip=False,showsize=True,overwrite=True)
 file_name = zip_download_location
 
 with ZipFile(file_name, 'r') as zip:

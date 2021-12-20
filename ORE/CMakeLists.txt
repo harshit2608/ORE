@@ -8,6 +8,8 @@ list(REMOVE_ITEM SRC "src/main/Application.cpp")
 option(DEBUG "Output to Debug dir" OFF)
 
 add_executable(${PROJECT_NAME} "src/main/Application.cpp" "${SRC}")
+add_executable(Scene2D_Test "test/2Dscene.cpp" "${SRC}")
+add_executable(Texture_Test "test/TextureTest.cpp" "${SRC}")
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC
@@ -40,4 +42,48 @@ if(DEBUG)
 else()
     file(COPY assets imgui.ini DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release)
 endif()
-unset(DEBUG CACHE)
+message("==== Copying Completed!! ====")
+
+
+target_include_directories(Scene2D_Test
+    PUBLIC
+        external
+        ${OPENGL_INCLUDE_DIR}
+)
+
+target_link_libraries(Scene2D_Test
+    PUBLIC
+        ${OPENGL_gl_LIBRARY}
+        glfw
+        Glad
+        spdlog
+        ImGui
+        stb_image
+        glm
+        assimp
+        imm32.lib
+        ImGuiFileDialog
+)
+target_precompile_headers(Scene2D_Test PRIVATE "src/pch.h" "src/pch.cpp")
+
+# TEXTURE TEST================================================================================
+target_include_directories(Texture_Test
+    PUBLIC
+        external
+        ${OPENGL_INCLUDE_DIR}
+)
+
+target_link_libraries(Texture_Test
+    PUBLIC
+        ${OPENGL_gl_LIBRARY}
+        glfw
+        Glad
+        spdlog
+        ImGui
+        stb_image
+        glm
+        assimp
+        imm32.lib
+        ImGuiFileDialog
+)
+target_precompile_headers(Texture_Test PRIVATE "src/pch.h" "src/pch.cpp")
